@@ -108,10 +108,10 @@ alias ll='ls -alF'
 alias la='ls -A'
 alias l='ls -CF'
 alias less='less -R'
-
 alias emacs='emacs -nw'
-
 alias git='hub'
+alias dist-upgrade='sudo apt-get update && sudo apt-get dist-upgrade && sudo apt-get autoremove && sudo apt-get autoclean'
+
 
 if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
