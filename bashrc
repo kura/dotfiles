@@ -10,6 +10,9 @@ shopt -s checkwinsize
 shopt -s cmdhist
 shopt -s cdspell
 
+# Refresh history
+export PROMPT_COMMAND="history -n; history -a"
+
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
 if [ -z "$debian_chroot" ] && [ -r /etc/debian_chroot ]; then
@@ -107,6 +110,7 @@ alias l='ls -CF'
 alias less='less -R'
 
 alias emacs='emacs -nw'
+
 alias git='hub'
 
 if [ -f ~/.bash_aliases ]; then
