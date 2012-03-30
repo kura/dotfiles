@@ -47,7 +47,7 @@ function git_unadded_new {
 		then
 			echo ""
 		else
-			echo "A "
+			echo "a "
 		fi
 	fi
 }
@@ -57,7 +57,7 @@ function git_needs_commit {
 	then
 		# Default: off - these are potentially expensive on big repositories
 		git diff-index --cached --quiet --ignore-submodules HEAD 2> /dev/null
-		(( $? && $? != 128 )) && echo "C "
+		(( $? && $? != 128 )) && echo "c "
 	fi
 }
 
@@ -65,25 +65,25 @@ function git_modified_files {
         if [[ "git rev-parse --is-inside-work-tree &> /dev/null)" != 'true' ]] && git rev-parse --quiet --verify HEAD &> /dev/null
         then
                 # Default: off - these are potentially expensive on big repositories
-                git diff --no-ext-diff --ignore-submodules --quiet --exit-code || echo "M "
+                git diff --no-ext-diff --ignore-submodules --quiet --exit-code || echo "m "
         fi
 }
 
 if [ `id -u` = 0 ]; then
 	COLOUR="04;01;31m"
-	PATH_COLOUR="04;01;31m"
+	PATH_COLOUR="01;31m"
 	TIME_COLOUR="0;31m"
 else
-	COLOUR="01;32m"
+	COLOUR="04;01;38;32m"
 	PATH_COLOUR="01;34m"
-	TIME_COLOUR="0;33m"
+	TIME_COLOUR="38;5;156m"
 fi
 
 BOLD_RED="01;31m"
 BOLD_GREEN="01;32m"
 BOLD_BLUE="01;34m"
 
-PS1='\[\033[$TIME_COLOUR\]$(date +%H:%M)\[\033[00m\] ${debian_chroot:+($debian_chroot)}\[\033[$COLOUR\]\u@\h\[\033[00m\]:\[\033[01;$PATH_COLOUR\]\w\[\033[00m\]\[\033[01;35m\] $(parse_git_branch)\[\033[00m\]\[\033[$BOLD_RED\]$(git_unadded_new)\[\033[00m\]\[\033[$BOLD_GREEN\]$(git_needs_commit)\[\033[00m\]\[\033[$BOLD_BLUE\]$(git_modified_files)\[\033[00m\]\n\[\033[$TIME_COLOUR\]h:\!\[\033[00m\] $ '
+PS1='\[\033[$TIME_COLOUR\]$(date +%H:%M)\[\033[00m\] ${debian_chroot:+($debian_chroot)}\[\033[$COLOUR\]\u@\h\[\033[00m\]:\[\033[01;$PATH_COLOUR\]\w\[\033[00m\]\[\033[01;35m\] $(parse_git_branch)\[\033[00m\]\[\033[$BOLD_RED\]$(git_unadded_new)\[\033[00m\]\[\033[$BOLD_GREEN\]$(git_needs_commit)\[\033[00m\]\[\033[$BOLD_BLUE\]$(git_modified_files)\[\033[00m\]\n\[\033[38;5;202m\]\!:\[\033[38;5;201m\]\#\[\033[0m $ '
 
 unset color_prompt force_color_prompt
 
