@@ -37,7 +37,7 @@ if [ -n "$force_color_prompt" ]; then
 fi
 
 function parse_git_branch {
-	git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1) /'
+	git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(git\:\1) /'
 }
 
 function git_unadded_new {
