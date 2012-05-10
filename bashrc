@@ -137,6 +137,15 @@ _pip_completion()
 complete -o default -F _pip_completion pip
 # pip bash completion end
 
+function pgp-search() {
+  if [ $# -ne 1 ]
+  then
+    echo "Usage: gpg-search TERM"
+  else
+    gpg --search-keys --keyserver keyserver.tangentlabs.co.uk $1
+  fi
+}
+
 function colourless() {
     if [ $# -ne 1 ]
     then
