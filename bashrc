@@ -177,7 +177,7 @@ function forward-map-dev-rabbitmq-web() {
     if ! [[ `lsof -i :$PORT | grep COMMAND` ]]
     then
         _forward_rmq_via_ssh 192.168.125.210 $PORT
-        echo "Forwarding using: $PORT"
+        echo "Forwarding using: $PORT @ http://localhost:$PORT"
     else
         forward-map-dev-rabbitmq-web
     fi
@@ -189,7 +189,7 @@ function forward-map-stage-rabbitmq-web() {
     if ! [[ `lsof -i :$PORT | grep COMMAND` ]]
     then
         _forward_rmq_via_ssh nat.map-test.tangentlabs.co.uk $PORT 2031
-        echo "Forwarding using: $PORT"
+        echo "Forwarding using: $PORT @ http://localhost:$PORT"
     else
         forward-map-rabbitmq-web
     fi
