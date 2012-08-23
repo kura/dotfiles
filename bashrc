@@ -170,5 +170,4 @@ function forward-map-rabbitmq-web() {
     else
         forward-map-rabbitmq-web
     fi
-
 }
