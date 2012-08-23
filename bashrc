@@ -159,9 +159,7 @@ function colourless() {
 }
 
 
-#MAP
-
-function _forward_ssh() {
+function _forward_rmq_via_ssh() {
     CMD_START="ssh"
     CMD_END=" -f $1 -L $2:localhost:55672 -N"
     if [ -n "$3" ]
@@ -172,11 +170,13 @@ function _forward_ssh() {
     eval $CMD
 }
 
+# MAP
+
 function forward-map-dev-rabbitmq-web() {
     PORT=$RANDOM
     if ! [[ `lsof -i :$PORT | grep COMMAND` ]]
     then
-        _forward_ssh 192.168.125.210 $PORT
+        _forward_rmq_via_ssh 192.168.125.210 $PORT
         echo "Forwarding using: $PORT"
     else
         forward-map-dev-rabbitmq-web
@@ -188,7 +188,7 @@ function forward-map-stage-rabbitmq-web() {
     PORT=$RANDOM
     if ! [[ `lsof -i :$PORT | grep COMMAND` ]]
     then
-        _forward_ssh nat.map-test.tangentlabs.co.uk $PORT 2031
+        _forward_rmq_via_ssh nat.map-test.tangentlabs.co.uk $PORT 2031
         echo "Forwarding using: $PORT"
     else
         forward-map-rabbitmq-web
