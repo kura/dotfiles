@@ -109,6 +109,9 @@ alias emacs='emacs -nw'
 alias git='hub'
 alias dist-upgrade='sudo apt-get update && sudo apt-get dist-upgrade && sudo apt-get autoremove && sudo apt-get autoclean'
 
+#MAP
+alias forward-map-rabbitmq-web='ssh -p 2031 -f nat.map-test.tangentlabs.co.uk -L 8888:localhost:55672 -N'
+
 
 if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
