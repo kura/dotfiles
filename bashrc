@@ -162,8 +162,13 @@ function colourless() {
 #MAP
 
 function forward-map-rabbitmq-web() {
-    port=$RANDOM
-    ssh -p 2031 -f nat.map-test.tangentlabs.co.uk -L $port:localhost:55672 -N
-    echo "Forwading using: $port"
+    PORT=$RANDOM
+    if ! [[ `lsof -i :$PORT | grep COMMAND` ]]
+    then
+        ssh -p 2031 -f nat.map-test.tangentlabs.co.uk -L $PORT:localhost:55672 -N
+        echo "Forwarding using: $PORT"
+    else
+        forward-map-rabbitmq-web
+    fi
 
 }
