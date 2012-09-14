@@ -183,7 +183,6 @@ function forward-map-dev-rabbitmq-web() {
     fi
 }
 
-
 function forward-map-stage-rabbitmq-web() {
     PORT=$RANDOM
     if ! [[ `lsof -i :$PORT | grep COMMAND` ]]
@@ -194,3 +193,15 @@ function forward-map-stage-rabbitmq-web() {
         forward-map-rabbitmq-web
     fi
 }
+
+function forward-map-prod-rabbitmq-web() {
+    PORT=$RANDOM
+    if ! [[ `lsof -i :$PORT | grep COMMAND` ]]
+    then
+        _forward_rmq_via_ssh map-prod-queue1 $PORT
+        echo "Forwarding using: $PORT @ http://localhost:$PORT"
+    else
+        forward-map-rabbitmq-web
+    fi
+}
+
