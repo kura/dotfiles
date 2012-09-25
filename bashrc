@@ -108,6 +108,15 @@ alias less='less -R'
 alias emacs='emacs -nw'
 alias git='hub'
 alias dist-upgrade='sudo apt-get update && sudo apt-get dist-upgrade && sudo apt-get autoremove && sudo apt-get autoclean'
+# Git
+alias ga='git add'
+alias gci='git commit'
+alias gst='git st'
+alias gt='git tag'
+alias gp='git push'
+alias gbr='git branch'
+alias gco='git co'
+alias grm='git rm'
 
 if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
