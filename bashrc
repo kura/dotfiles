@@ -118,6 +118,7 @@ alias gpl='git pull'
 alias gbr='git branch'
 alias gco='git co'
 alias grm='git rm'
+alias gmv='git mv'
 alias gcl='git clone'
 
 if [ -f ~/.bash_aliases ]; then
