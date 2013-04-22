@@ -184,12 +184,12 @@ function mkvirtualenv() {
     fi
     PY_VER=$1
     NAME=$2
-    virtualenv -p $PY_VER /home/kura/.virtualenvs/$NAME
+    virtualenv -p $PY_VER /home/kura/.virtualenvs/$NAME-$PY_VER
 }
 
 function _mkvirtualenv() {
     cur="${COMP_WORDS[COMP_CWORD]}"
-    py="python2.7 python3.2 pypy1.9 pypy2.0"
+    py="python2.5 python2.6 python2.7 python3.1 python3.2 python3.3 pypy1.9 pypy2.0"
     COMPREPLY=($(compgen -W "${py}" -- ${cur}))
 }
 
