@@ -34,46 +34,44 @@ if [ -n "$force_color_prompt" ]; then
 fi
 
 function parse_git_branch {
-	git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(git\:\1) /'
+    git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(git\:\1) /'
 }
 
 function git_unadded_new {
-	if git rev-parse --is-inside-work-tree &> /dev/null
-	then
-		if [[ -z $(git ls-files --other --exclude-standard 2> /dev/null) ]]
-		then
-			echo ""
-		else
-			echo "a "
-		fi
-	fi
+    if git rev-parse --is-inside-work-tree &> /dev/null
+    then
+        if [[ -z $(git ls-files --other --exclude-standard 2> /dev/null) ]]
+        then
+            echo ""
+        else
+            echo "a "
+        fi
+    fi
 }
 
 function git_needs_commit {
-	if [[ "git rev-parse --is-inside-work-tree &> /dev/null)" != 'true' ]] && git rev-parse --quiet --verify HEAD &> /dev/null
-	then
-		# Default: off - these are potentially expensive on big repositories
-		git diff-index --cached --quiet --ignore-submodules HEAD 2> /dev/null
-		(( $? && $? != 128 )) && echo "c "
-	fi
+    if [[ "git rev-parse --is-inside-work-tree &> /dev/null)" != 'true' ]] && git rev-parse --quiet --verify HEAD &> /dev/null
+    then
+        git diff-index --cached --quiet --ignore-submodules HEAD 2> /dev/null
+        (( $? && $? != 128 )) && echo "c "
+    fi
 }
 
 function git_modified_files {
-        if [[ "git rev-parse --is-inside-work-tree &> /dev/null)" != 'true' ]] && git rev-parse --quiet --verify HEAD &> /dev/null
-        then
-                # Default: off - these are potentially expensive on big repositories
-                git diff --no-ext-diff --ignore-submodules --quiet --exit-code || echo "m "
-        fi
+    if [[ "git rev-parse --is-inside-work-tree &> /dev/null)" != 'true' ]] && git rev-parse --quiet --verify HEAD &> /dev/null
+    then
+        git diff --no-ext-diff --ignore-submodules --quiet --exit-code || echo "m "
+    fi
 }
 
 if [ `id -u` = 0 ]; then
-	COLOUR="04;01;31m"
-	PATH_COLOUR="01;31m"
-	TIME_COLOUR="0;31m"
+    COLOUR="04;01;31m"
+    PATH_COLOUR="01;31m"
+    TIME_COLOUR="0;31m"
 else
-	COLOUR="01;32m"
-	PATH_COLOUR="01;34m"
-	TIME_COLOUR="0;33m"
+    COLOUR="01;32m"
+    PATH_COLOUR="01;34m"
+    TIME_COLOUR="0;33m"
 fi
 
 BOLD_RED="01;31m"
@@ -95,7 +93,6 @@ esac
 if [ -x /usr/bin/dircolors ]; then
     test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
     alias ls='ls --color=always'
-
     alias grep='grep --color=always'
     alias fgrep='fgrep --color=always'
     alias egrep='egrep --color=always'
@@ -106,7 +103,7 @@ alias la='ls -A'
 alias l='ls -CF'
 alias less='less -R'
 alias emacs='emacs -nw'
-alias git='hub'
+#alias git='hub'
 alias dist-upgrade='sudo apt-get update && sudo apt-get dist-upgrade && sudo apt-get autoremove && sudo apt-get autoclean'
 # Git
 alias ga='git add'
@@ -120,6 +117,13 @@ alias gco='git co'
 alias grm='git rm'
 alias gmv='git mv'
 alias gcl='git clone'
+#python
+alias pypy1.9='/opt/pypy-1.9/bin/pypy'
+alias pypy2.0='/opt/pypy-2.0/bin/pypy'
+alias pip-pypy1.9='/opt/pypy-1.9/bin/pip'
+alias pip-pypy2.0='/opt/pypy-2.0/bin/pip'
+alias ipython-pypy1.9='/opt/pypy-1.9/bin/ipython'
+alias ipython-pypy2.0='/opt/pypy-2.0/bin/ipython'
 
 if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
@@ -131,12 +135,12 @@ fi
 
 export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python
 export WORKON_HOME=/home/kura/.virtualenvs
+export VIRTUALENVWRAPPER_LOG_DIR="$WORKON_HOME"
+export VIRTUALENVWRAPPER_HOOK_DIR="$WORKON_HOME"
 alias workoff='deactivate'
 source /usr/local/bin/virtualenvwrapper.sh
-#. /etc/bash_completion.d/django_bash_completion
 export PYTHONSTARTUP=~/.pythonrc
 export PYTHONSTARTUP=~/.pystartup
-export DJANGO_COLORS="light"
 
 # pip bash completion start
 _pip_completion()
@@ -171,49 +175,22 @@ function colourless() {
 }
 
 
-function _forward_rmq_via_ssh() {
-    CMD_START="ssh"
-    CMD_END=" -f $1 -L $2:localhost:55672 -N"
-    if [ -n "$3" ]
+
+function mkvirtualenv() {
+    if [[ $# -ne 2 ]]
     then
-        CMD_START="ssh -p $3"
+        echo "Usage: mkvirtualenv PYTHON_VER NAME"
+        exit;
     fi
-    CMD="$CMD_START $CMD_END"
-    eval $CMD
+    PY_VER=$1
+    NAME=$2
+    virtualenv -p $PY_VER /home/kura/.virtualenvs/$NAME
 }
 
-# MAP
-
-function forward-map-dev-rabbitmq-web() {
-    PORT=$RANDOM
-    if ! [[ `lsof -i :$PORT | grep COMMAND` ]]
-    then
-        _forward_rmq_via_ssh 192.168.125.210 $PORT
-        echo "Forwarding using: $PORT @ http://localhost:$PORT"
-    else
-        forward-map-dev-rabbitmq-web
-    fi
+function _mkvirtualenv() {
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    py="python2.7 python3.2 pypy1.9 pypy2.0"
+    COMPREPLY=($(compgen -W "${py}" -- ${cur}))
 }
 
-function forward-map-stage-rabbitmq-web() {
-    PORT=$RANDOM
-    if ! [[ `lsof -i :$PORT | grep COMMAND` ]]
-    then
-        _forward_rmq_via_ssh nat.map-test.tangentlabs.co.uk $PORT 2031
-        echo "Forwarding using: $PORT @ http://localhost:$PORT"
-    else
-        forward-map-rabbitmq-web
-    fi
-}
-
-function forward-map-prod-rabbitmq-web() {
-    PORT=$RANDOM
-    if ! [[ `lsof -i :$PORT | grep COMMAND` ]]
-    then
-        _forward_rmq_via_ssh map-prod-queue1 $PORT
-        echo "Forwarding using: $PORT @ http://localhost:$PORT"
-    else
-        forward-map-rabbitmq-web
-    fi
-}
-
+complete -F _mkvirtualenv mkvirtualenv
