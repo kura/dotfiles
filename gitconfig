@@ -3,10 +3,18 @@
   ci = commit
   st = status
   br = branch
-  hist = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short
+  lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+  lc = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit -p
   type = cat-file -t
   dump = cat-file -p
 [user]
 	name = Kura
 	email = kura@deviling.net
 	signingkey = /home/kura/.gnupg/secring.gpg
+[github]
+	user = kura
+	token = 973bf4d8d1d19c801075b4409c238a84
+[core]
+	excludesfile = /home/kura/.gitignore_global
+[hub]
+	protocol = ssh

@@ -177,14 +177,15 @@ function colourless() {
 
 
 function mkvirtualenv() {
-    if [[ $# -ne 2 ]]
-    then
-        echo "Usage: mkvirtualenv PYTHON_VER NAME"
-        exit;
-    fi
+  if [[ $# -ne 2 ]]
+  then
+    echo "Usage: mkvirtualenv PYTHON_VER NAME"
+  else
     PY_VER=$1
     NAME=$2
     virtualenv -p $PY_VER /home/kura/.virtualenvs/$NAME-$PY_VER
+    workon $NAME-$PY_VER
+  fi
 }
 
 function _mkvirtualenv() {
@@ -194,3 +195,43 @@ function _mkvirtualenv() {
 }
 
 complete -F _mkvirtualenv mkvirtualenv
+
+function portforward() {
+  if [[ $# -ne 2 ]]
+  then
+    echo "Usage: portforward HOST PORT";
+  else
+    HOST=$1
+    REMOTE_PORT=$2
+    # Pick a random port and check it is free
+    LOCAL_PORT=$((RANDOM+1000))
+    if ! [[ `lsof -i :$LOCAL_PORT | grep COMMAND` ]]
+    then
+      # Port is free - woop!
+      echo "Forwarding to port $REMOTE_PORT on $HOST from http://localhost:$LOCAL_PORT"
+      ssh -f -L $LOCAL_PORT:localhost:$REMOTE_PORT $HOST -N 2> /dev/null
+    else
+      # Recursion ftw
+      portforward $HOST $REMOTE_PORT
+    fi
+  fi
+}
+ 
+# Used for autocompletion
+function _portforward() {
+  cur="${COMP_WORDS[COMP_CWORD]}"
+  # COMP_CWORD-1 = portforward, i.e. the name of this function, so autocomplete SSH host
+  if [[ ${COMP_WORDS[COMP_CWORD-1]} == "portforward" ]]
+  then
+    # the sed call is there to combat people like me who have "grep --color=always" on by default
+    hosts=$(grep "Host " ~/.ssh/config | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g" | grep -v "#" | grep -v "*" | awk '{print $2}')
+    COMPREPLY=($(compgen -W "${hosts}" -- ${cur}))
+  else
+    # otherwise assume on second arg, so autocomplete service name
+    ports="22 80 2222 3306 5432 8080 11211 55672 15672"
+    COMPREPLY=($(compgen -W "${ports}" -- ${cur}))
+  fi
+  return 0
+}
+ 
+complete -F _portforward portforward
