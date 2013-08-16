@@ -1,6 +1,8 @@
 # If not running interactively, don't do anything
 [ -z "$PS1" ] && return
 
+PATH=$PATH:~/go/bin
+
 HISTCONTROL=ignoredups:ignorespace
 shopt -s histappend
 PROMPT_COMMAND='history -a'
@@ -34,7 +36,7 @@ if [ -n "$force_color_prompt" ]; then
 fi
 
 function parse_git_branch {
-    git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(git\:\1) /'
+    git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1) /'
 }
 
 function git_unadded_new {
@@ -64,6 +66,10 @@ function git_modified_files {
     fi
 }
 
+function short_pwd {
+    echo $PWD | sed "s:${HOME}:~:" | sed "s:/\(.\)[^/]*:/\1:g" | sed "s:/[^/]*$:/$(basename $PWD):"
+}
+
 if [ `id -u` = 0 ]; then
     COLOUR="04;01;31m"
     PATH_COLOUR="01;31m"
@@ -78,7 +84,7 @@ BOLD_RED="01;31m"
 BOLD_GREEN="01;32m"
 BOLD_BLUE="01;34m"
 
-PS1='\[\033[$TIME_COLOUR\][$(date +%H:%M)]\[\033[00m\] ${debian_chroot:+($debian_chroot)}\[\033[$COLOUR\]\u@\h\[\033[00m\]:\[\033[01;$PATH_COLOUR\]\w\[\033[00m\]\[\033[01;35m\] $(parse_git_branch)\[\033[00m\]\[\033[$BOLD_RED\]$(git_unadded_new)\[\033[00m\]\[\033[$BOLD_GREEN\]$(git_needs_commit)\[\033[00m\]\[\033[$BOLD_BLUE\]$(git_modified_files)\[\033[00m\]\n\[\033[$TIME_COLOUR\]\!:\#\[\033[00m\] $ '
+PS1='\[\033[$TIME_COLOUR\][$(date +%H:%M)]\[\033[00m\] ${debian_chroot:+($debian_chroot)}\[\033[$COLOUR\]\u@\h\[\033[00m\]:\[\033[01;$PATH_COLOUR\]$(short_pwd)\[\033[00m\]\[\033[01;35m\] $(parse_git_branch)\[\033[00m\]\[\033[$BOLD_RED\]$(git_unadded_new)\[\033[00m\]\[\033[$BOLD_GREEN\]$(git_needs_commit)\[\033[00m\]\[\033[$BOLD_BLUE\]$(git_modified_files)\[\033[00m\]\n\[\033[$TIME_COLOUR\]\!:\#\[\033[00m\] $ '
 
 unset color_prompt force_color_prompt
 
@@ -118,13 +124,8 @@ alias gco='git co'
 alias grm='git rm'
 alias gmv='git mv'
 alias gcl='git clone'
-#python
-alias pypy1.9='/opt/pypy-1.9/bin/pypy'
-alias pypy2.0='/opt/pypy-2.0/bin/pypy'
-alias pip-pypy1.9='/opt/pypy-1.9/bin/pip'
-alias pip-pypy2.0='/opt/pypy-2.0/bin/pip'
-alias ipython-pypy1.9='/opt/pypy-1.9/bin/ipython'
-alias ipython-pypy2.0='/opt/pypy-2.0/bin/ipython'
+
+
 
 if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
@@ -191,7 +192,7 @@ function mkvirtualenv() {
 
 function _mkvirtualenv() {
     cur="${COMP_WORDS[COMP_CWORD]}"
-    py="python2.5 python2.6 python2.7 python3.1 python3.2 python3.3 pypy1.9 pypy2.0"
+    py="python2.5 python2.6 python2.7 python3.1 python3.2 python3.3 pypy1.9 pypy2.0 pypy2.1"
     COMPREPLY=($(compgen -W "${py}" -- ${cur}))
 }
 
