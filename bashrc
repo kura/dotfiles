@@ -46,7 +46,7 @@ function git_unadded_new {
         then
             echo ""
         else
-            echo "a "
+            echo "@ "
         fi
     fi
 }
@@ -55,14 +55,14 @@ function git_needs_commit {
     if [[ "git rev-parse --is-inside-work-tree &> /dev/null)" != 'true' ]] && git rev-parse --quiet --verify HEAD &> /dev/null
     then
         git diff-index --cached --quiet --ignore-submodules HEAD 2> /dev/null
-        (( $? && $? != 128 )) && echo "c "
+        (( $? && $? != 128 )) && echo "@ "
     fi
 }
 
 function git_modified_files {
     if [[ "git rev-parse --is-inside-work-tree &> /dev/null)" != 'true' ]] && git rev-parse --quiet --verify HEAD &> /dev/null
     then
-        git diff --no-ext-diff --ignore-submodules --quiet --exit-code || echo "m "
+        git diff --no-ext-diff --ignore-submodules --quiet --exit-code || echo "@ "
     fi
 }
 
@@ -84,7 +84,9 @@ BOLD_RED="01;31m"
 BOLD_GREEN="01;32m"
 BOLD_BLUE="01;34m"
 
-PS1='\[\033[$TIME_COLOUR\][$(date +%H:%M)]\[\033[00m\] ${debian_chroot:+($debian_chroot)}\[\033[$COLOUR\]\u@\h\[\033[00m\]:\[\033[01;$PATH_COLOUR\]$(short_pwd)\[\033[00m\]\[\033[01;35m\] $(parse_git_branch)\[\033[00m\]\[\033[$BOLD_RED\]$(git_unadded_new)\[\033[00m\]\[\033[$BOLD_GREEN\]$(git_needs_commit)\[\033[00m\]\[\033[$BOLD_BLUE\]$(git_modified_files)\[\033[00m\]\n\[\033[$TIME_COLOUR\]\!:\#\[\033[00m\] $ '
+
+#PS1='${debian_chroot:+($debian_chroot)}\[\033[$COLOUR\]\u@\h\[\033[00m\]:\[\033[01;$PATH_COLOUR\]$(short_pwd)\[\033[00m\]\[\033[01;35m\]\n$(parse_git_branch)\[\033[00m\]\[\033[$BOLD_RED\]$(git_unadded_new)\[\033[00m\]\[\033[$BOLD_GREEN\]$(git_needs_commit)\[\033[00m\]\[\033[$BOLD_BLUE\]$(git_modified_files)\[\033[00m\]> '
+PS1='${debian_chroot:+($debian_chroot)}\[\033[$COLOUR\]\u@\h\[\033[00m\]:\[\033[01;$PATH_COLOUR\]$(short_pwd)\[\033[00m\] \[\033[01;35m\]$(parse_git_branch)\[\033[00m\]\[\033[$BOLD_RED\]$(git_unadded_new)\[\033[00m\]\[\033[$BOLD_GREEN\]$(git_needs_commit)\[\033[00m\]\[\033[$BOLD_BLUE\]$(git_modified_files)\[\033[00m\]> '
 
 unset color_prompt force_color_prompt
 
