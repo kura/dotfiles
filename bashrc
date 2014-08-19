@@ -36,7 +36,7 @@ if [ -n "$force_color_prompt" ]; then
 fi
 
 function parse_git_branch {
-    git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1) /'
+    git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1 /'
 }
 
 function git_unadded_new {
@@ -112,7 +112,7 @@ alias l='ls -CF'
 alias less='less -R'
 alias emacs='emacs -nw'
 alias git='hub'
-alias dist-upgrade='sudo apt-get update && sudo apt-get dist-upgrade && sudo apt-get autoremove && sudo apt-get autoclean'
+alias dist-upgrade='sudo apt-get update -y && sudo apt-get dist-upgrade -y && sudo apt-get autoremove -y && sudo apt-get autoclean -y'
 alias pip-upgrade='pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs pip install -U'
 # Git
 alias ga='git add'
@@ -127,7 +127,7 @@ alias grm='git rm'
 alias gmv='git mv'
 alias gcl='git clone'
 
-
+export JAVA_HOME=/usr/lib/jvm/jdk1.7.0_25/
 
 if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
@@ -186,15 +186,21 @@ function mkvirtualenv() {
     echo "Usage: mkvirtualenv PYTHON_VER NAME"
   else
     PY_VER=$1
+    if [[ $PY_VER == 'pypy' || $PY_VER == 'pypy3' ]]
+    then
+      PY_BIN=/opt/$PY_VER/bin/pypy
+    else
+      PY_BIN=/usr/bin/python$PY_VER
+    fi
     NAME=$2
-    virtualenv -p $PY_VER /home/kura/.virtualenvs/$NAME-$PY_VER
+    virtualenv -p $PY_BIN /home/kura/.virtualenvs/$NAME-$PY_VER
     workon $NAME-$PY_VER
   fi
 }
 
 function _mkvirtualenv() {
     cur="${COMP_WORDS[COMP_CWORD]}"
-    py="python2.5 python2.6 python2.7 python3.1 python3.2 python3.3 pypy1.9 pypy2.0 pypy2.1"
+    py="2.6 2.7 3.3 pypy pypy3"
     COMPREPLY=($(compgen -W "${py}" -- ${cur}))
 }
 
@@ -239,3 +245,43 @@ function _portforward() {
 }
  
 complete -F _portforward portforward
+
+__ltrim_colon_completions() {
+    # If word-to-complete contains a colon,
+    # and bash-version < 4,
+    # or bash-version >= 4 and COMP_WORDBREAKS contains a colon
+    if [[
+        "$1" == *:* && (
+            ${BASH_VERSINFO[0]} -lt 4 ||
+            (${BASH_VERSINFO[0]} -ge 4 && "$COMP_WORDBREAKS" == *:*)
+        )
+    ]]; then
+        # Remove colon-word prefix from COMPREPLY items
+        local colon_word=${1%${1##*:}}
+        local i=${#COMPREPLY[*]}
+        while [ $((--i)) -ge 0 ]; do
+            COMPREPLY[$i]=${COMPREPLY[$i]#"$colon_word"}
+        done
+    fi
+} # __ltrim_colon_completions()
+
+_nosetests()
+{
+    cur=${COMP_WORDS[COMP_CWORD]}
+    if [[
+            ${BASH_VERSINFO[0]} -lt 4 ||
+            (${BASH_VERSINFO[0]} -ge 4 && "$COMP_WORDBREAKS" == *:*)
+    ]]; then
+        local i=$COMP_CWORD
+        while [ $i -ge 0 ]; do
+            [ "${COMP_WORDS[$((i--))]}" == ":" ] && break
+        done
+        if [ $i -gt 0 ]; then
+            cur=$(printf "%s" ${COMP_WORDS[@]:$i})
+        fi
+    fi
+    COMPREPLY=(`nosecomplete ${cur} 2>/dev/null`)
+    __ltrim_colon_completions "$cur"
+}
+
+complete -o nospace -F _nosetests nosetests
