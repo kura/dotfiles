@@ -1,7 +1,7 @@
 # If not running interactively, don't do anything
 [ -z "$PS1" ] && return
 
-PATH=$PATH:~/go/bin
+PATH=$PATH:~/go/bin:~/.local/bin
 
 HISTCONTROL=ignoredups:ignorespace
 shopt -s histappend
@@ -100,34 +100,13 @@ esac
 
 if [ -x /usr/bin/dircolors ]; then
     test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
-    alias ls='ls --color=always'
-    alias grep='grep --color=always'
-    alias fgrep='fgrep --color=always'
-    alias egrep='egrep --color=always'
+    alias ls='ls --color'
 fi
 
-alias ll='ls -alF'
-alias la='ls -A'
-alias l='ls -CF'
 alias less='less -R'
-alias emacs='emacs -nw'
 alias git='hub'
 alias dist-upgrade='sudo apt-get update -y && sudo apt-get dist-upgrade -y && sudo apt-get autoremove -y && sudo apt-get autoclean -y'
 alias pip-upgrade='pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs pip install -U'
-# Git
-alias ga='git add'
-alias gci='git commit'
-alias gst='git st'
-alias gt='git tag'
-alias gps='git push'
-alias gpl='git pull'
-alias gbr='git branch'
-alias gco='git co'
-alias grm='git rm'
-alias gmv='git mv'
-alias gcl='git clone'
-
-export JAVA_HOME=/usr/lib/jvm/jdk1.7.0_25/
 
 if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
@@ -145,6 +124,7 @@ alias workoff='deactivate'
 source /usr/local/bin/virtualenvwrapper.sh
 export PYTHONSTARTUP=~/.pythonrc
 export PYTHONSTARTUP=~/.pystartup
+source <(npm completion)
 
 # pip bash completion start
 _pip_completion()
@@ -178,8 +158,6 @@ function colourless() {
     fi
 }
 
-
-
 function mkvirtualenv() {
   if [[ $# -ne 2 ]]
   then
@@ -200,7 +178,7 @@ function mkvirtualenv() {
 
 function _mkvirtualenv() {
     cur="${COMP_WORDS[COMP_CWORD]}"
-    py="2.6 2.7 3.3 pypy pypy3"
+    py="2.6 2.7 3.3 3.4 pypy pypy3"
     COMPREPLY=($(compgen -W "${py}" -- ${cur}))
 }
 
@@ -285,3 +263,18 @@ _nosetests()
 }
 
 complete -o nospace -F _nosetests nosetests
+
+source /usr/local/hop/hop.bash
+
+pipsi-upgrade() {
+    for i in `find ~/.local/venvs/ -maxdepth 1 -type d`
+    do
+        if [ $i != "/home/kura/.local/venvs" ]
+        then
+            old_pwd=$PWD
+            cd ${i}bin/
+            ./pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs ./pip install -U
+            cd $old_pwd
+        fi
+    done
+}
