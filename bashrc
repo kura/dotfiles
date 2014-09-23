@@ -39,14 +39,14 @@ function parse_git_branch {
     git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1 /'
 }
 
-function git_unadded_new {
+function git_untracked {
     if git rev-parse --is-inside-work-tree &> /dev/null
     then
         if [[ -z $(git ls-files --other --exclude-standard 2> /dev/null) ]]
         then
             echo ""
         else
-            echo "@ "
+            echo "⚑ "
         fi
     fi
 }
@@ -55,14 +55,14 @@ function git_needs_commit {
     if [[ "git rev-parse --is-inside-work-tree &> /dev/null)" != 'true' ]] && git rev-parse --quiet --verify HEAD &> /dev/null
     then
         git diff-index --cached --quiet --ignore-submodules HEAD 2> /dev/null
-        (( $? && $? != 128 )) && echo "@ "
+        (( $? && $? != 128 )) && echo "⚑ "
     fi
 }
 
-function git_modified_files {
+function git_tracked {
     if [[ "git rev-parse --is-inside-work-tree &> /dev/null)" != 'true' ]] && git rev-parse --quiet --verify HEAD &> /dev/null
     then
-        git diff --no-ext-diff --ignore-submodules --quiet --exit-code || echo "@ "
+        git diff --no-ext-diff --ignore-submodules --quiet --exit-code || echo "⚑ "
     fi
 }
 
@@ -73,11 +73,9 @@ function short_pwd {
 if [ `id -u` = 0 ]; then
     COLOUR="04;01;31m"
     PATH_COLOUR="01;31m"
-    TIME_COLOUR="0;31m"
 else
     COLOUR="01;32m"
     PATH_COLOUR="01;34m"
-    TIME_COLOUR="0;33m"
 fi
 
 BOLD_RED="01;31m"
@@ -85,18 +83,9 @@ BOLD_GREEN="01;32m"
 BOLD_BLUE="01;34m"
 
 
-#PS1='${debian_chroot:+($debian_chroot)}\[\033[$COLOUR\]\u@\h\[\033[00m\]:\[\033[01;$PATH_COLOUR\]$(short_pwd)\[\033[00m\]\[\033[01;35m\]\n$(parse_git_branch)\[\033[00m\]\[\033[$BOLD_RED\]$(git_unadded_new)\[\033[00m\]\[\033[$BOLD_GREEN\]$(git_needs_commit)\[\033[00m\]\[\033[$BOLD_BLUE\]$(git_modified_files)\[\033[00m\]> '
-PS1='${debian_chroot:+($debian_chroot)}\[\033[$COLOUR\]\u@\h\[\033[00m\]:\[\033[01;$PATH_COLOUR\]$(short_pwd)\[\033[00m\] \[\033[01;35m\]$(parse_git_branch)\[\033[00m\]\[\033[$BOLD_RED\]$(git_unadded_new)\[\033[00m\]\[\033[$BOLD_GREEN\]$(git_needs_commit)\[\033[00m\]\[\033[$BOLD_BLUE\]$(git_modified_files)\[\033[00m\]> '
+PS1='\[\033[01;$PATH_COLOUR\]$(short_pwd)\[\033[00m\] \[\033[01;35m\]$(parse_git_branch)\[\033[00m\]\[\033[$BOLD_RED\]$(git_untracked)\[\033[00m\]\[\033[$BOLD_BLUE\]$(git_tracked)\[\033[00m\]\[\033[$BOLD_GREEN\]$(git_needs_commit)\[\033[00m\]⚡ '
 
 unset color_prompt force_color_prompt
-
-case "$TERM" in
-xterm*|rxvt*)
-    PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
-    ;;
-*)
-    ;;
-esac
 
 if [ -x /usr/bin/dircolors ]; then
     test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
