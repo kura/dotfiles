@@ -73,9 +73,9 @@ function short_pwd {
 function exit_code {
     if [[ $? == 0 ]]
     then
-        echo -e "\033[01;32m✓\\033[00m"
+        echo -e "$? \033[01;32m✓\\033[00m"
     else
-        echo -e "\033[01;31m✗\\033[00m"
+        echo -e "$? \033[01;31m✗\\033[00m"
     fi
 }
 
