@@ -36,8 +36,10 @@ if [ -n "$force_color_prompt" ]; then
 fi
 
 if [ `id -u` = 0 ]; then
+    HOST_COLOUR="01;31m"
     PATH_COLOUR="01;31m"
 else
+    HOST_COLOUR="01;32m"
     PATH_COLOUR="01;34m"
 fi
 
@@ -46,7 +48,10 @@ function _git_branch {
 }
 
 function git_branch {
-    echo -e "\033[01;36m$(_git_branch)\033[00m"
+    if [[ "git branch --no-color 2> /dev/null" != 'false' ]]
+    then
+        echo -e "\033[01;36m$(_git_branch)\033[00m"
+    fi
 }
 
 function git_untracked {
@@ -84,6 +89,14 @@ function short_pwd {
     echo -e "\033[$PATH_COLOUR$(_short_pwd)\033[00m"
 }
 
+function _hostname {
+    echo "${HOSTNAME}" | cut -d "." -f1
+}
+
+function hostname {
+    echo -e "\033[$HOST_COLOUR$(_hostname)\033[00m"
+}
+
 function exit_code {
     if [[ $? == 0 ]]
     then
@@ -93,7 +106,7 @@ function exit_code {
     fi
 }
 
-PS1='$(exit_code) $(short_pwd) $(git_branch)$(git_untracked)$(git_tracked)$(git_needs_commit)⚡ '
+PS1='$(exit_code) $(hostname):$(short_pwd) $(git_branch)$(git_untracked)$(git_tracked)$(git_needs_commit)⚡ '
 
 unset color_prompt force_color_prompt
 
