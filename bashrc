@@ -35,8 +35,18 @@ if [ -n "$force_color_prompt" ]; then
     fi
 fi
 
-function parse_git_branch {
+if [ `id -u` = 0 ]; then
+    PATH_COLOUR="01;31m"
+else
+    PATH_COLOUR="01;34m"
+fi
+
+function _git_branch {
     git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ \1  /'
+}
+
+function git_branch {
+    echo -e "\033[01;36m$(_git_branch)\033[00m"
 }
 
 function git_untracked {
@@ -46,7 +56,7 @@ function git_untracked {
         then
             echo ""
         else
-            echo "⚑ "
+            echo -e "\033[01;31m⚑ \033[00m"
         fi
     fi
 }
@@ -55,19 +65,23 @@ function git_needs_commit {
     if [[ "git rev-parse --is-inside-work-tree &> /dev/null)" != 'true' ]] && git rev-parse --quiet --verify HEAD &> /dev/null
     then
         git diff-index --cached --quiet --ignore-submodules HEAD 2> /dev/null
-        (( $? && $? != 128 )) && echo "⚑ "
+        (( $? && $? != 128 )) && echo -e "\033[01;32m⚑ \033[00m"
     fi
 }
 
 function git_tracked {
     if [[ "git rev-parse --is-inside-work-tree &> /dev/null)" != 'true' ]] && git rev-parse --quiet --verify HEAD &> /dev/null
     then
-        git diff --no-ext-diff --ignore-submodules --quiet --exit-code || echo "⚑ "
+        git diff --no-ext-diff --ignore-submodules --quiet --exit-code || echo -e "\033[01;34m⚑ \033[00m"
     fi
 }
 
-function short_pwd {
+function _short_pwd {
     echo $PWD | sed "s:${HOME}:~:" | sed "s:/\(.\)[^/]*:/\1:g" | sed "s:/[^/]*$:/$(basename $PWD):"
+}
+
+function short_pwd {
+    echo -e "\033[$PATH_COLOUR$(_short_pwd)\033[00m "
 }
 
 function exit_code {
@@ -79,20 +93,7 @@ function exit_code {
     fi
 }
 
-if [ `id -u` = 0 ]; then
-    COLOUR="04;01;31m"
-    PATH_COLOUR="01;31m"
-else
-    COLOUR="01;32m"
-    PATH_COLOUR="01;34m"
-fi
-
-BOLD_RED="01;31m"
-BOLD_GREEN="01;32m"
-BOLD_BLUE="01;34m"
-
-
-PS1='$(exit_code) \[\033[01;$PATH_COLOUR\]$(short_pwd)\[\033[00m\] \[\033[01;36m\]$(parse_git_branch)\[\033[00m\]\[\033[$BOLD_RED\]$(git_untracked)\[\033[00m\]\[\033[$BOLD_BLUE\]$(git_tracked)\[\033[00m\]\[\033[$BOLD_GREEN\]$(git_needs_commit)\[\033[00m\]⚡ '
+PS1='$(exit_code) $(short_pwd) $(git_branch)$(git_untracked)$(git_tracked)$(git_needs_commit)⚡ '
 
 unset color_prompt force_color_prompt
 
