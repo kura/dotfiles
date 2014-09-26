@@ -81,7 +81,7 @@ function _short_pwd {
 }
 
 function short_pwd {
-    echo -e "\033[$PATH_COLOUR$(_short_pwd)\033[00m "
+    echo -e "\033[$PATH_COLOUR$(_short_pwd)\033[00m"
 }
 
 function exit_code {
