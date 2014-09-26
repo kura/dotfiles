@@ -83,7 +83,7 @@ BOLD_GREEN="01;32m"
 BOLD_BLUE="01;34m"
 
 
-PS1='\[\033[01;$PATH_COLOUR\]$(short_pwd)\[\033[00m\] \[\033[01;35m\]$(parse_git_branch)\[\033[00m\]\[\033[$BOLD_RED\]$(git_untracked)\[\033[00m\]\[\033[$BOLD_BLUE\]$(git_tracked)\[\033[00m\]\[\033[$BOLD_GREEN\]$(git_needs_commit)\[\033[00m\]⚡ '
+PS1="\$(if [[ \$? == 0 ]]; then echo \"\[\033[01;32m\]\342\234\223\"; else echo \"\[\033[01;31m\]\342\234\227\"; fi) \[\033[01;$PATH_COLOUR\]$(short_pwd)\[\033[00m\] \[\033[01;36m\]$(parse_git_branch)\[\033[00m\]\[\033[$BOLD_RED\]$(git_untracked)\[\033[00m\]\[\033[$BOLD_BLUE\]$(git_tracked)\[\033[00m\]\[\033[$BOLD_GREEN\]$(git_needs_commit)\[\033[00m\]⚡ "
 
 unset color_prompt force_color_prompt
 
