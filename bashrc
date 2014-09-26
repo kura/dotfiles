@@ -89,12 +89,8 @@ function short_pwd {
     echo -e "\033[$PATH_COLOUR$(_short_pwd)\033[00m"
 }
 
-function _hostname {
-    echo "${HOSTNAME}" | cut -d "." -f1
-}
-
 function hostname {
-    echo -e "\033[$HOST_COLOUR$(_hostname)\033[00m"
+    echo -e "\033[$HOST_COLOUR${HOSTNAME%%.*}\033[00m"
 }
 
 function exit_code {
