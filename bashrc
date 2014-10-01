@@ -46,7 +46,7 @@ fi
 function git_branch {
     if [[ $(git branch --no-color 2> /dev/null) ]]
     then
-        gb=`git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ \1  /'`
+        gb=`git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\(\1\) /'`
         echo -e "\033[01;36m${gb}\033[00m"
     fi
 }
