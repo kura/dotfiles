@@ -43,19 +43,16 @@ else
     PATH_COLOUR="01;34m"
 fi
 
-function _git_branch {
-    git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ \1  /'
-}
-
 function git_branch {
-    if [[ "git branch --no-color 2> /dev/null" != 'false' ]]
+    if [[ $(git branch --no-color 2> /dev/null) ]]
     then
-        echo -e "\033[01;36m$(_git_branch)\033[00m"
+        gb=`git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ \1  /'`
+        echo -e "\033[01;36m${gb}\033[00m"
     fi
 }
 
 function git_untracked {
-    if git rev-parse --is-inside-work-tree &> /dev/null
+    if [[ $(git rev-parse --is-inside-work-tree &> /dev/null) ]]
     then
         if [[ -z $(git ls-files --other --exclude-standard 2> /dev/null) ]]
         then
@@ -67,7 +64,7 @@ function git_untracked {
 }
 
 function git_needs_commit {
-    if [[ "git rev-parse --is-inside-work-tree &> /dev/null)" != 'true' ]] && git rev-parse --quiet --verify HEAD &> /dev/null
+    if [[ $(git rev-parse --is-inside-work-tree &> /dev/null) != 'true' ]] && git rev-parse --quiet --verify HEAD &> /dev/null
     then
         git diff-index --cached --quiet --ignore-submodules HEAD 2> /dev/null
         (( $? && $? != 128 )) && echo -e "\033[01;32m⚑ \033[00m"
@@ -75,7 +72,7 @@ function git_needs_commit {
 }
 
 function git_tracked {
-    if [[ "git rev-parse --is-inside-work-tree &> /dev/null)" != 'true' ]] && git rev-parse --quiet --verify HEAD &> /dev/null
+    if [[ $(git rev-parse --is-inside-work-tree &> /dev/null) != 'true' ]] && git rev-parse --quiet --verify HEAD &> /dev/null
     then
         git diff --no-ext-diff --ignore-submodules --quiet --exit-code || echo -e "\033[01;34m⚑ \033[00m"
     fi
@@ -212,7 +209,7 @@ function portforward() {
     fi
   fi
 }
- 
+
 # Used for autocompletion
 function _portforward() {
   cur="${COMP_WORDS[COMP_CWORD]}"
@@ -229,7 +226,7 @@ function _portforward() {
   fi
   return 0
 }
- 
+
 complete -F _portforward portforward
 
 __ltrim_colon_completions() {
