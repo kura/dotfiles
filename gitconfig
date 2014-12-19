@@ -19,7 +19,6 @@
     signkey = FF214105
 [github]
     user = kura
-    token = 973bf4d8d1d19c801075b4409c238a84
 [core]
     excludesfile = /home/kura/.gitignore_global
 [hub]
