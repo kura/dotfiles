@@ -72,7 +72,7 @@ function git_needs_commit {
     fi
 }
 
-function git_tracked {
+function git_staged {
     if [[ $(git rev-parse --is-inside-work-tree &> /dev/null) != 'true' ]] && git rev-parse --quiet --verify HEAD &> /dev/null
     then
         git diff --no-ext-diff --ignore-submodules --quiet --exit-code || echo -e "\033[01;34m\U2691 \033[00m"
@@ -113,7 +113,7 @@ function exit_code {
 
 export VIRTUAL_ENV_DISABLE_PROMPT=1
 
-PS1=$'$(exit_code) $(virtualenv_info)$(hostname):$(short_pwd) $(git_branch)$(git_untracked)$(git_tracked)$(git_needs_commit)\U26A1 '
+PS1=$'$(exit_code) $(virtualenv_info)$(hostname):$(short_pwd) $(git_branch)$(git_untracked)$(git_staged)$(git_needs_commit)\U26A1 '
 
 unset color_prompt force_color_prompt
 
@@ -195,7 +195,7 @@ function mkvirtualenv() {
 
 function _mkvirtualenv() {
     cur="${COMP_WORDS[COMP_CWORD]}"
-    py="2.6 2.7 3.3 3.4 pypy pypy3"
+    py="2.6 2.7 3.4 pypy pypy3"
     COMPREPLY=($(compgen -W "${py}" -- ${cur}))
 }
 
