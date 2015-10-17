@@ -37,10 +37,8 @@ fi
 
 if [ `id -u` = 0 ]
 then
-    HOST_COLOUR="01;31m"
     PATH_COLOUR="01;31m"
 else
-    HOST_COLOUR="01;32m"
     PATH_COLOUR="01;34m"
 fi
 
@@ -48,7 +46,7 @@ function git_branch {
     if [[ $(git branch --no-color 2> /dev/null) ]]
     then
         gb=`git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\(\1\) /'`
-        echo -e "\033[01;36m${gb}\033[00m"
+        echo -e "${gb}"
     fi
 }
 
@@ -59,7 +57,7 @@ function git_untracked {
         then
             echo ""
         else
-            echo -e "\033[01;31m\U2691 \033[00m"
+            echo -e "* "
         fi
     fi
 }
@@ -68,29 +66,20 @@ function git_needs_commit {
     if [[ $(git rev-parse --is-inside-work-tree &> /dev/null) != 'true' ]] && git rev-parse --quiet --verify HEAD &> /dev/null
     then
         git diff-index --cached --quiet --ignore-submodules HEAD 2> /dev/null
-        (( $? && $? != 128 )) && echo -e "\033[01;32m\U2691 \033[00m"
+        (( $? && $? != 128 )) && echo -e "* "
     fi
 }
 
 function git_staged {
     if [[ $(git rev-parse --is-inside-work-tree &> /dev/null) != 'true' ]] && git rev-parse --quiet --verify HEAD &> /dev/null
     then
-        git diff --no-ext-diff --ignore-submodules --quiet --exit-code || echo -e "\033[01;34m\U2691 \033[00m"
+        git diff --no-ext-diff --ignore-submodules --quiet --exit-code || echo -e "* "
     fi
 }
 
-function _short_pwd {
+function short_pwd {
     echo $PWD | sed "s:${HOME}:~:" | sed "s:/\(.\)[^/]*:/\1:g" | sed "s:/[^/]*$:/$(basename $PWD):"
 }
-
-function short_pwd {
-    echo -e "\033[$PATH_COLOUR$(_short_pwd)\033[00m"
-}
-
-function hostname {
-    echo -e "\033[$HOST_COLOUR${HOSTNAME%%.*}\033[00m"
-}
-
 
 function virtualenv_info {
     if [[ -n "$VIRTUAL_ENV" ]]
@@ -99,21 +88,13 @@ function virtualenv_info {
     else
         venv=''
     fi
-    [[ -n "$venv" ]] && echo -e "\033[01;36m($venv)\033[00m "
-}
-
-function exit_code {
-    if [[ $? == 0 ]]
-    then
-        echo -e "$? \033[01;32m\U2713\033[00m"
-    else
-        echo -e "$? \033[01;31m\U2717\033[00m"
-    fi
+    [[ -n "$venv" ]] && echo "($venv) "
 }
 
 export VIRTUAL_ENV_DISABLE_PROMPT=1
 
-PS1=$'$(exit_code) $(virtualenv_info)$(hostname):$(short_pwd) $(git_branch)$(git_untracked)$(git_staged)$(git_needs_commit)\U26A1 '
+#PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+PS1='\[\033[01;36m\]$(virtualenv_info)\[\033[00m\]\[\033[$PATH_COLOUR\]$(short_pwd)\[\033[00m\] \[\033[01;36m\]$(git_branch)\[\033[00m\]\[\033[01;31m\]$(git_untracked)\[\033[00m\]\[\033[01;34m\]$(git_staged)\[\033[00m\]\[\033[01;32m\]$(git_needs_commit)\[\033[00m\]\$ '
 
 unset color_prompt force_color_prompt
 
