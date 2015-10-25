@@ -231,6 +231,21 @@ complete -o nospace -F _nosetests nosetests
 
 
 ssh() {
+    if [ $# -ne 1 ]
+    then
+        echo "Usage: ssh HOST"
+        return
+    fi
+    # Knock file
+    # 
+    # Format -
+    #
+    # SERVER1="PORT1 PORT2 ..."
+    # SERVER2="PORT1 PORT2 ..."
+    #
+    # web="123 456 789 1011"
+    # db="234 567 8910 1112"
+    #
     source ~/.ssh/knock
     name=`echo $1 | cut -d"." -f1`
     nc -z $1 ${!name}
