@@ -233,7 +233,7 @@ complete -o nospace -F _nosetests nosetests
 ssh() {
     if [ $# -ne 1 ]
     then
-        echo "Usage: ssh HOST"
+        echo "Usage: ssh [user@]host"
         return
     fi
     # Knock file
