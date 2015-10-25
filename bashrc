@@ -248,7 +248,10 @@ ssh() {
     #
     source ~/.ssh/knock
     name=`echo $1 | cut -d"." -f1`
-    nc -z $1 ${!name}
+    if [ -n "${!name}" ]
+    then
+        nc -z $1 ${!name}
+    fi
     /usr/bin/mosh $1
 }
 
