@@ -162,7 +162,6 @@ fi
 alias dist-upgrade='sudo apt-get update -y && sudo apt-get dist-upgrade -y && sudo apt-get autoremove -y && sudo apt-get autoclean -y'
 alias pip-upgrade='pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs pip install -U'
 alias git='hub'
-alias ssh='mosh'
 
 export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python2.7
 export WORKON_HOME=/home/kura/.virtualenvs
@@ -229,4 +228,14 @@ _nosetests()
 }
 
 complete -o nospace -F _nosetests nosetests
+
+
+ssh() {
+    source ~/.ssh/knock
+    name=`echo $1 | cut -d"." -f1`
+    nc -z $1 ${!name}
+    /usr/bin/mosh $1
+}
+
+complete -F _known_hosts knock_ssh
 
