@@ -255,5 +255,5 @@ ssh() {
     /usr/bin/mosh $1
 }
 
-complete -F _known_hosts knock_ssh
+complete -F _known_hosts ssh
 
