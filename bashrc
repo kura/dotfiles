@@ -166,7 +166,7 @@ alias dist-upgrade='sudo apt-get update -y && sudo apt-get dist-upgrade -y && su
 alias pip-upgrade='pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs pip install -U'
 alias git='hub'
 
-export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python2.7
+export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3.4
 export WORKON_HOME=/home/kura/.virtualenvs
 export VIRTUALENVWRAPPER_LOG_DIR="$WORKON_HOME"
 export VIRTUALENVWRAPPER_HOOK_DIR="$WORKON_HOME"
