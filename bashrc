@@ -2,6 +2,8 @@
 # see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
 # for examples
 
+export PATH=~/.local/bin:$PATH
+
 # If not running interactively, don't do anything
 case $- in
     *i*) ;;
@@ -134,6 +136,9 @@ fi
 alias ll='ls -alF'
 alias la='ls -A'
 alias l='ls -CF'
+alias python='python3'
+alias virtualenv='virtualenv-3.4'
+alias pip='pip3'
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
@@ -257,3 +262,11 @@ ssh() {
 
 complete -F _known_hosts knock_ssh
 
+if ! pgrep -u $USER ssh-agent > /dev/null; then
+    ssh-agent > ~/.ssh-agent-thing
+fi
+if [[ "$SSH_AGENT_PID" == "" ]]; then
+    eval $(<~/.ssh-agent-thing)
+fi
+ssh-add -l >/dev/null || alias ssh='ssh-add -l >/dev/null || ssh-add && unalias ssh; ssh'
+ssh-add -l >/dev/null || alias git='ssh-add -l >/dev/null || ssh-add && unalias git; git'
