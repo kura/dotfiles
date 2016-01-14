@@ -136,9 +136,9 @@ fi
 alias ll='ls -alF'
 alias la='ls -A'
 alias l='ls -CF'
-alias python='python3'
+alias python='python3.4'
 alias virtualenv='virtualenv-3.4'
-alias pip='pip3'
+alias pip='pip3.4'
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
@@ -168,7 +168,7 @@ alias dist-upgrade='sudo apt-get update -y && sudo apt-get dist-upgrade -y && su
 alias pip-upgrade='pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs pip install -U'
 alias git='hub'
 
-export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python2.7
+export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3.4
 export WORKON_HOME=/home/kura/.virtualenvs
 export VIRTUALENVWRAPPER_LOG_DIR="$WORKON_HOME"
 export VIRTUALENVWRAPPER_HOOK_DIR="$WORKON_HOME"
@@ -238,7 +238,7 @@ complete -o nospace -F _nosetests nosetests
 ssh() {
     if [ $# -ne 1 ]
     then
-        echo "Usage: ssh HOST"
+        echo "Usage: ssh [user@]host"
         return
     fi
     # Knock file
@@ -260,7 +260,7 @@ ssh() {
     /usr/bin/mosh $1
 }
 
-complete -F _known_hosts knock_ssh
+complete -F _known_hosts ssh
 
 if ! pgrep -u $USER ssh-agent > /dev/null; then
     ssh-agent > ~/.ssh-agent-thing
