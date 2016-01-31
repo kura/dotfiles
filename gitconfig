@@ -16,7 +16,7 @@
     name = Kura
     email = kura@kura.io
     signingkey = /home/kura/.gnupg/secring.gpg
-    signkey = FF214105
+    signkey = 00AE065E
 [github]
     user = kura
 [core]
@@ -25,3 +25,9 @@
     protocol = ssh
 [push]
     default = simple
+[transfer] 
+    fsckobjects = true 
+[fetch] 
+    fsckobjects = true 
+[receive] 
+    fsckObjects = true
