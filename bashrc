@@ -255,7 +255,10 @@ ssh() {
     name=`echo $1 | cut -d"." -f1`
     if [ -n "${!name}" ]
     then
-        nc -z $1 ${!name}
+         for p in ${!name}
+         do
+             knock $1 $p
+         done
     fi
     /usr/bin/mosh $1
 }
