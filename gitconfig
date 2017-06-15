@@ -24,7 +24,6 @@
   name = Kura
   email = kura@kura.io
   signingkey = CB361A5467937A6D58AE8062ABD20EBD00AE065E
-#  signkey = 00AE065E
 [github]
   user = kura
   token = 973bf4d8d1d19c801075b4409c238a84
