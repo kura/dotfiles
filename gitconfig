@@ -1,33 +1,42 @@
 [alias]
-    cl = clone
-    co = checkout
-    ci = commit
-    st = status
-    br = branch
-    lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
-    lc = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit -p
-    type = cat-file -t
-    dump = cat-file -p
-    open = !hub browse -- 
-    issues = !hub browse -- issues
-    pulls = !hub browse -- pulls
-    settings = !hub browse -- settings [user]
+  co = checkout
+  ci = commit -S
+  st = status
+  br = branch
+  tag = tag -s
+  lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+  lc = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit -p
+  type = cat-file -t
+  dump = cat-file -p
+  branches = branches
+  undo = undo
+  sync = sync
+  sy = sync
+  resync = resync
+  rs = resync
+  switch = switch
+  sw = switch
+  publish = publish
+  pub = publish
+  unpublish = unpublish
+  unp = unpublish
 [user]
-    name = Kura
-    email = kura@kura.io
-    signingkey = /home/kura/.gnupg/secring.gpg
-    signkey = 00AE065E
+  name = Kura
+  email = kura@kura.io
+  signingkey = CB361A5467937A6D58AE8062ABD20EBD00AE065E
+#  signkey = 00AE065E
 [github]
-    user = kura
+  user = kura
+  token = 973bf4d8d1d19c801075b4409c238a84
 [core]
-    excludesfile = /home/kura/.gitignore_global
+  excludesfile = /home/kura/.gitignore_global
 [hub]
-    protocol = ssh
+  protocol = ssh
 [push]
-    default = simple
+  default = matching
 [transfer] 
-    fsckobjects = true 
+  fsckobjects = true 
 [fetch] 
-    fsckobjects = true 
+  fsckobjects = true 
 [receive] 
-    fsckObjects = true
+  fsckObjects = true
