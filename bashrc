@@ -175,7 +175,7 @@ git() {
       cmd='legit'
       ;;
     *)
-      cmd='git'
+      cmd='hub'
       ;;
   esac
   command "$cmd" "$@"
@@ -263,13 +263,11 @@ complete -F _ssh ssh
 if ! test -f /tmp/.ssh-agent-thing
 then
   killall ssh-agent &>/dev/null
-  eval `ssh-agent -s` > /tmp/.ssh-agent-thing
+  ssh-agent -s | grep -v 'echo Agent' > /tmp/.ssh-agent-thing
+  . /tmp/.ssh-agent-thing
+else
+  . /tmp/.ssh-agent-thing
 fi
-if [[ "$SSH_AGENT_PID" == "" ]]; then
-  _ssh_pid=`cat /tmp/.ssh-agent-thing | awk '{ print $3}'`
-  export SSH_AGENT_PID=`cat /tmp/.ssh-agent-thing | awk '{ print $3}'`
-fi
-
 
 pip-upgrade() {
   venvs=`find ~/.local/venvs -maxdepth 1 -mindepth 1 -type d`
@@ -293,3 +291,4 @@ pip-upgrade() {
 
 # added by travis gem
 [ -f /home/kura/.travis/travis.sh ] && source /home/kura/.travis/travis.sh
+
