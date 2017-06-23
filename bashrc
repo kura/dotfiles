@@ -90,7 +90,7 @@ function git_staged {
 }
 
 ci-status() {
-  status=$(git ci-status)
+  status=$(git ci-status 2> /dev/null)
   case "$status" in
     success)
       echo -e "\033[01;32m✔\033[00m "
@@ -321,3 +321,10 @@ _virtualenvs () {
   COMPREPLY=( $(compgen -W "`virtualenvwrapper_show_workon_options`" -- ${cur}) )
 }
 complete -o default -o nospace -F _virtualenvs wo
+
+
+export THEME=$HOME/.bash/themes/agnoster-bash/agnoster.bash
+if [[ -f $THEME ]]; then
+    export DEFAULT_USER=""
+    source $THEME
+fi
