@@ -89,6 +89,21 @@ function git_staged {
   fi
 }
 
+ci-status() {
+  status=$(git ci-status)
+  case "$status" in
+    success)
+      echo -e "\033[01;32m✔\033[00m "
+      ;;
+    failure)
+      echo -e "\033[01;31m✘\033[00m "
+      ;;
+    *)
+      echo -e ""
+      ;;
+  esac
+}
+
 function short_pwd {
   echo $PWD | sed "s:${HOME}:~:" | sed "s:/\(.\)[^/]*:/\1:g" | sed "s:/[^/]*$:/$(basename $PWD):"
 }
@@ -106,7 +121,7 @@ function virtualenv_info {
 export VIRTUAL_ENV_DISABLE_PROMPT=1
 
 #PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
-PS1='\[\033[01;36m\]$(virtualenv_info)\[\033[00m\]\[\033[$PATH_COLOUR\]$(short_pwd)\[\033[00m\] \[\033[01;36m\]$(git_branch)\[\033[00m\]\[\033[01;31m\]$(git_untracked)\[\033[00m\]\[\033[01;34m\]$(git_staged)\[\033[00m\]\[\033[01;32m\]$(git_needs_commit)\[\033[00m\]\$ '
+PS1='\[\033[01;36m\]$(virtualenv_info)\[\033[00m\]\[\033[$PATH_COLOUR\]$(short_pwd)\[\033[00m\] \[\033[01;36m\]$(git_branch)\[\033[00m\]\[\033[01;31m\]$(git_untracked)\[\033[00m\]\[\033[01;34m\]$(git_staged)\[\033[00m\]\[\033[01;32m\]$(git_needs_commit)\[\033[00m\]$(ci-status)\$ '
 
 # If this is an xterm set the title to user@host:dir
 case "$TERM" in
@@ -141,6 +156,12 @@ alias python='python3.6'
 alias pip='pip3.6'
 alias sl='sl -eal'
 alias apt-get='apt-fast'
+alias wo='workon'
+alias da='deactivate'
+
+rl() {
+  exec "$SHELL"
+}
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
@@ -168,11 +189,14 @@ fi
 
 alias dist-upgrade='sudo apt-fast update -y && sudo apt-fast dist-upgrade -y && sudo apt-fast autoremove -y && sudo apt-fast autoclean -y'
 # alias pip-upgrade='pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs pip install -U'
-alias git='hub'
+# alias git='hub'
 git() {
   case $@ in
     undo|sy|sync|sw|switch|pub|publish|unp|unpublish|rs|resync|branches)
       cmd='legit'
+      ;;
+    merge|rebase|revert|drop)
+      cmd='git-imerge'
       ;;
     *)
       cmd='hub'
@@ -292,3 +316,8 @@ pip-upgrade() {
 # added by travis gem
 [ -f /home/kura/.travis/travis.sh ] && source /home/kura/.travis/travis.sh
 
+_virtualenvs () {
+  local cur="${COMP_WORDS[COMP_CWORD]}"
+  COMPREPLY=( $(compgen -W "`virtualenvwrapper_show_workon_options`" -- ${cur}) )
+}
+complete -o default -o nospace -F _virtualenvs wo

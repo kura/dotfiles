@@ -20,6 +20,7 @@
   pub = publish
   unpublish = unpublish
   unp = unpublish
+  drop = drop
 [user]
   name = Kura
   email = kura@kura.io
