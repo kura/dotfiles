@@ -1,7 +1,3 @@
-# ~/.bashrc: executed by bash(1) for non-login shells.
-# see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
-# for examples
-
 export PATH=~/.local/bin:$PATH
 
 # If not running interactively, don't do anything
@@ -45,7 +41,7 @@ esac
 # uncomment for a colored prompt, if the terminal has the capability; turned
 # off by default to not distract the user: the focus in a terminal window
 # should be on the output of commands, not on the prompt
-#force_color_prompt=yes
+force_color_prompt=yes
 
 # if [ `id -u` = 0 ]
 # then
@@ -132,45 +128,11 @@ case "$TERM" in
     ;;
 esac
 
-# enable color support of ls and also add handy aliases
-if [ -x /usr/bin/dircolors ]; then
-  test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
-  alias ls='ls --color=auto'
-  #alias dir='dir --color=auto'
-  #alias vdir='vdir --color=auto'
-
-  alias grep='grep --color=auto'
-  alias fgrep='fgrep --color=auto'
-  alias egrep='egrep --color=auto'
-fi
-
-# colored GCC warnings and errors
-#export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
-
-# some more ls aliases
-alias ll='ls -alF'
-alias la='ls -A'
-alias l='ls -CF'
-alias python='python3.6'
-# alias virtualenv='virtualenv-3.5'
-alias pip='pip3.6'
-alias sl='sl -eal'
-alias apt-get='apt-fast'
-alias wo='workon'
-alias da='deactivate'
-
-reload() {
-  exec "$SHELL"
-}
+export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
-alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
-
-# Alias definitions.
-# You may want to put all your additions into a separate file like
-# ~/.bash_aliases, instead of adding them here directly.
-# See /usr/share/doc/bash-doc/examples in the bash-doc package.
+# alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 
 if [ -f ~/.bash_aliases ]; then
   . ~/.bash_aliases
@@ -187,33 +149,6 @@ if ! shopt -oq posix; then
   fi
 fi
 
-alias dist-upgrade='sudo apt update -y && sudo apt dist-upgrade -y && sudo apt autoremove -y && sudo apt autoclean -y'
-# alias pip-upgrade='pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs pip install -U'
-# alias git='hub'
-git() {
-  case $@ in
-    undo|sy|sync|sw|switch|pub|publish|unp|unpublish|rs|resync|branches)
-      cmd='legit'
-      ;;
-    *)
-      cmd='hub'
-      ;;
-  esac
-  command "$cmd" "$@"
-}
-
-apt() {
-  case $@ in
-    install|dist-upgrade|update)
-      cmd='apt-fast'
-      ;;
-    *)
-      cmd='/usr/bin/apt'
-      ;;
-  esac
-  command "$cmd" "$@"
-}
-
 export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3.6
 export WORKON_HOME=/home/kura/.virtualenvs
 export VIRTUALENVWRAPPER_LOG_DIR="$WORKON_HOME"
@@ -228,15 +163,6 @@ _pip_completion()
 }
 
 complete -o default -F _pip_completion pip
-
-function pgp-search() {
-  if [ $# -ne 1 ]
-  then
-    echo "Usage: pgp-search TERM"
-  else
-    gpg --search-keys --keyserver pgp.mit.edu $1
-  fi
-}
 
 _knock()
 {
@@ -302,35 +228,8 @@ else
   . /tmp/.ssh-agent-thing
 fi
 
-pip-upgrade() {
-  venvs=`find ~/.local/venvs -maxdepth 1 -mindepth 1 -type d | sort`
-  for env in $venvs
-  do
-    echo $env
-    echo "=========="
-    $env/bin/pip install -U pip
-    $env/bin/pip freeze --local | grep -v '^\-e' | cut -d = -f 1 | sort | xargs $env/bin/pip install -U
-    echo
-  done
-  venvs=`find ~/.virtualenvs -maxdepth 1 -mindepth 1 -type d | sort `
-  for env in $venvs
-  do
-    echo $env
-    echo "=========="
-    $env/bin/pip install -U pip
-    $env/bin/pip freeze --local | grep -v '^\-e' | cut -d = -f 1 | sort | xargs $env/bin/pip install -U
-    echo
-  done
-}
-
 # added by travis gem
 [ -f /home/kura/.travis/travis.sh ] && source /home/kura/.travis/travis.sh
-
-_virtualenvs () {
-  local cur="${COMP_WORDS[COMP_CWORD]}"
-  COMPREPLY=( $(compgen -W "`virtualenvwrapper_show_workon_options`" -- ${cur}) )
-}
-complete -o default -o nospace -F _virtualenvs wo
 
 
 export THEME=$HOME/.bash/themes/agnoster-bash/agnoster.bash
