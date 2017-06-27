@@ -47,81 +47,81 @@ esac
 # should be on the output of commands, not on the prompt
 #force_color_prompt=yes
 
-if [ `id -u` = 0 ]
-then
-  PATH_COLOUR="01;31m"
-else
-  PATH_COLOUR="01;34m"
-fi
-
-function git_branch {
-  if [[ $(git branch --no-color 2> /dev/null) ]]
-  then
-    gb=`git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\(\1\) /'`
-    echo -e "${gb}"
-  fi
-}
-
-function git_untracked {
-  if [[ $(git rev-parse --is-inside-work-tree 2> /dev/null) == true ]]
-  then
-    if [[ -z $(git ls-files --other --exclude-standard 2> /dev/null) ]]
-    then
-      echo ""
-    else
-      echo -e "* "
-    fi
-  fi
-}
-
-function git_needs_commit {
-  if [[ $(git rev-parse --is-inside-work-tree &> /dev/null) != 'true' ]] && git rev-parse --quiet --verify HEAD &> /dev/null
-  then
-    git diff-index --cached --quiet --ignore-submodules HEAD 2> /dev/null
-    (( $? && $? != 128 )) && echo -e "* "
-  fi
-}
-
-function git_staged {
-  if [[ $(git rev-parse --is-inside-work-tree &> /dev/null) != 'true' ]] && git rev-parse --quiet --verify HEAD &> /dev/null
-  then
-    git diff --no-ext-diff --ignore-submodules --quiet --exit-code || echo -e "* "
-  fi
-}
-
-ci-status() {
-  status=$(git ci-status 2> /dev/null)
-  case "$status" in
-    success)
-      echo -e "\033[01;32m✔\033[00m "
-      ;;
-    failure)
-      echo -e "\033[01;31m✘\033[00m "
-      ;;
-    *)
-      echo -e ""
-      ;;
-  esac
-}
-
-function short_pwd {
-  echo $PWD | sed "s:${HOME}:~:" | sed "s:/\(.\)[^/]*:/\1:g" | sed "s:/[^/]*$:/$(basename $PWD):"
-}
-
-function virtualenv_info {
-  if [[ -n "$VIRTUAL_ENV" ]]
-  then
-    venv="${VIRTUAL_ENV##*/}"
-  else
-    venv=''
-  fi
-  [[ -n "$venv" ]] && echo "($venv) "
-}
+# if [ `id -u` = 0 ]
+# then
+#   PATH_COLOUR="01;31m"
+# else
+#   PATH_COLOUR="01;34m"
+# fi
+# 
+# function git_branch {
+#   if [[ $(git branch --no-color 2> /dev/null) ]]
+#   then
+#     gb=`git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\(\1\) /'`
+#     echo -e "${gb}"
+#   fi
+# }
+# 
+# function git_untracked {
+#   if [[ $(git rev-parse --is-inside-work-tree 2> /dev/null) == true ]]
+#   then
+#     if [[ -z $(git ls-files --other --exclude-standard 2> /dev/null) ]]
+#     then
+#       echo ""
+#     else
+#       echo -e "* "
+#     fi
+#   fi
+# }
+# 
+# function git_needs_commit {
+#   if [[ $(git rev-parse --is-inside-work-tree &> /dev/null) != 'true' ]] && git rev-parse --quiet --verify HEAD &> /dev/null
+#   then
+#     git diff-index --cached --quiet --ignore-submodules HEAD 2> /dev/null
+#     (( $? && $? != 128 )) && echo -e "* "
+#   fi
+# }
+# 
+# function git_staged {
+#   if [[ $(git rev-parse --is-inside-work-tree &> /dev/null) != 'true' ]] && git rev-parse --quiet --verify HEAD &> /dev/null
+#   then
+#     git diff --no-ext-diff --ignore-submodules --quiet --exit-code || echo -e "* "
+#   fi
+# }
+# 
+# ci-status() {
+#   status=$(git ci-status 2> /dev/null)
+#   case "$status" in
+#     success)
+#       echo -e "\033[01;32m✔\033[00m "
+#       ;;
+#     failure)
+#       echo -e "\033[01;31m✘\033[00m "
+#       ;;
+#     *)
+#       echo -e ""
+#       ;;
+#   esac
+# }
+# 
+# function short_pwd {
+#   echo $PWD | sed "s:${HOME}:~:" | sed "s:/\(.\)[^/]*:/\1:g" | sed "s:/[^/]*$:/$(basename $PWD):"
+# }
+# 
+# function virtualenv_info {
+#   if [[ -n "$VIRTUAL_ENV" ]]
+#   then
+#     venv="${VIRTUAL_ENV##*/}"
+#   else
+#     venv=''
+#   fi
+#   [[ -n "$venv" ]] && echo "($venv) "
+# }
 
 export VIRTUAL_ENV_DISABLE_PROMPT=1
 
 #PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
-PS1='\[\033[01;36m\]$(virtualenv_info)\[\033[00m\]\[\033[$PATH_COLOUR\]$(short_pwd)\[\033[00m\] \[\033[01;36m\]$(git_branch)\[\033[00m\]\[\033[01;31m\]$(git_untracked)\[\033[00m\]\[\033[01;34m\]$(git_staged)\[\033[00m\]\[\033[01;32m\]$(git_needs_commit)\[\033[00m\]$(ci-status)\$ '
+# PS1='\[\033[01;36m\]$(virtualenv_info)\[\033[00m\]\[\033[$PATH_COLOUR\]$(short_pwd)\[\033[00m\] \[\033[01;36m\]$(git_branch)\[\033[00m\]\[\033[01;31m\]$(git_untracked)\[\033[00m\]\[\033[01;34m\]$(git_staged)\[\033[00m\]\[\033[01;32m\]$(git_needs_commit)\[\033[00m\]$(ci-status)\$ '
 
 # If this is an xterm set the title to user@host:dir
 case "$TERM" in
@@ -159,7 +159,7 @@ alias apt-get='apt-fast'
 alias wo='workon'
 alias da='deactivate'
 
-rl() {
+reload() {
   exec "$SHELL"
 }
 
@@ -187,7 +187,7 @@ if ! shopt -oq posix; then
   fi
 fi
 
-alias dist-upgrade='sudo apt-fast update -y && sudo apt-fast dist-upgrade -y && sudo apt-fast autoremove -y && sudo apt-fast autoclean -y'
+alias dist-upgrade='sudo apt update -y && sudo apt dist-upgrade -y && sudo apt autoremove -y && sudo apt autoclean -y'
 # alias pip-upgrade='pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs pip install -U'
 # alias git='hub'
 git() {
@@ -195,11 +195,20 @@ git() {
     undo|sy|sync|sw|switch|pub|publish|unp|unpublish|rs|resync|branches)
       cmd='legit'
       ;;
-    merge|rebase|revert|drop)
-      cmd='git-imerge'
-      ;;
     *)
       cmd='hub'
+      ;;
+  esac
+  command "$cmd" "$@"
+}
+
+apt() {
+  case $@ in
+    install|dist-upgrade|update)
+      cmd='apt-fast'
+      ;;
+    *)
+      cmd='/usr/bin/apt'
       ;;
   esac
   command "$cmd" "$@"
@@ -294,22 +303,23 @@ else
 fi
 
 pip-upgrade() {
-  venvs=`find ~/.local/venvs -maxdepth 1 -mindepth 1 -type d`
+  venvs=`find ~/.local/venvs -maxdepth 1 -mindepth 1 -type d | sort`
   for env in $venvs
   do
-    $env/bin/pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs $env/bin/pip install -U
+    echo $env
+    echo "=========="
     $env/bin/pip install -U pip
+    $env/bin/pip freeze --local | grep -v '^\-e' | cut -d = -f 1 | sort | xargs $env/bin/pip install -U
+    echo
   done
-  venvs=`find ~/.virtualenvs -maxdepth 1 -mindepth 1 -type d`
+  venvs=`find ~/.virtualenvs -maxdepth 1 -mindepth 1 -type d | sort `
   for env in $venvs
   do
-    $env/bin/pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs $env/bin/pip install -U
+    echo $env
+    echo "=========="
     $env/bin/pip install -U pip
-  done
-  for ver in 2.7 3.4 3.5
-  do
-    sudo pip$ver freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs sudo pip$ver install -U
-    sudo pip$ver install -U pip                                                                  
+    $env/bin/pip freeze --local | grep -v '^\-e' | cut -d = -f 1 | sort | xargs $env/bin/pip install -U
+    echo
   done
 }
 
