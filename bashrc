@@ -237,3 +237,5 @@ if [[ -f $THEME ]]; then
     export DEFAULT_USER=""
     source $THEME
 fi
+
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
