@@ -38,20 +38,25 @@ function pgp-search() {
 }
 
 pip-upgrade() {
-  venvs=`find ~/.local/venvs -maxdepth 1 -mindepth 1 -type d | sort | grep -v colout`
+  orig_pwd=`pwd`
+  venvs=`find ~/.local/venvs -maxdepth 1 -mindepth 1 -type d | sort`
   for env in $venvs
   do
     echo -e "\e[1;4m${env}\e[0m"
-    $env/bin/pip install -U pip | colout 'up\-to\-date\:\ (.*)\ in' purple | colout 'in\ (.*)' blue | colout 'up-to-date' green | colout 'Collecting\ (.*)' purple | colout 'packages\:\ (.*)' purple | colout 'installation\:\ (.*)' purple | colout 'Uninstalling\ (.*)' purple | colout '(Successfully\ uninstalled\ .*)' green | colout '(Successfully\ installed\ .*)' green | colout '(Downloading\ .*)' orange | colout '(Using\ cached\ .*)' orange
-    $env/bin/pip freeze --local | grep -v '^\-e' | cut -d = -f 1 | sort | xargs $env/bin/pip install -U | colout 'up\-to\-date\:\ (.*)\ in' purple | colout 'in\ (.*)' blue | colout 'up-to-date' green | colout 'Collecting\ (.*)' purple | colout 'packages\:\ (.*)' purple | colout 'installation\:\ (.*)' purple | colout 'Uninstalling\ (.*)' purple | colout '(Successfully\ uninstalled\ .*)' green | colout '(Successfully\ installed\ .*)' green | colout '(Downloading\ .*)' orange | colout '(Using\ cached\ .*)' orange
+    cd $env
+    bin/pip install -U pip | colout 'up\-to\-date\:\ (.*)\ in' purple | colout 'in\ (.*)' blue | colout 'up-to-date' green | colout 'Collecting\ (.*)' purple | colout 'packages\:\ (.*)' purple | colout 'installation\:\ (.*)' purple | colout 'Uninstalling\ (.*)' purple | colout '(Successfully\ uninstalled\ .*)' green | colout '(Successfully\ installed\ .*)' green | colout '(Downloading\ .*)' orange | colout '(Using\ cached\ .*)' orange
+    bin/pip freeze --local | grep -v '^\-e' | cut -d = -f 1 | sort | xargs bin/pip install -U | colout 'up\-to\-date\:\ (.*)\ in' purple | colout 'in\ (.*)' blue | colout 'up-to-date' green | colout 'Collecting\ (.*)' purple | colout 'packages\:\ (.*)' purple | colout 'installation\:\ (.*)' purple | colout 'Uninstalling\ (.*)' purple | colout '(Successfully\ uninstalled\ .*)' green | colout '(Successfully\ installed\ .*)' green | colout '(Downloading\ .*)' orange | colout '(Using\ cached\ .*)' orange
+    cd $orig_pwd
     echo
   done
   venvs=`find ~/.virtualenvs -maxdepth 1 -mindepth 1 -type d | sort `
   for env in $venvs
   do
     echo -e "\e[1;4m${env}\e[0m"
-    $env/bin/pip install -U pip | colout 'up\-to\-date\:\ (.*)\ in' purple | colout 'in\ (.*)' blue | colout 'up-to-date' green | colout 'Collecting\ (.*)' purple | colout 'packages\:\ (.*)' purple | colout 'installation\:\ (.*)' purple | colout 'Uninstalling\ (.*)' purple | colout '(Successfully\ uninstalled\ .*)' green | colout '(Successfully\ installed\ .*)' green | colout '(Downloading\ .*)' orange | colout '(Using\ cached\ .*)' orange
-    $env/bin/pip freeze --local | grep -v '^\-e' | cut -d = -f 1 | sort | xargs $env/bin/pip install -U | colout 'up\-to\-date\:\ (.*)\ in' purple | colout 'in\ (.*)' blue | colout 'up-to-date' green | colout 'Collecting\ (.*)' purple | colout 'packages\:\ (.*)' purple | colout 'installation\:\ (.*)' purple | colout 'Uninstalling\ (.*)' purple | colout '(Successfully\ uninstalled\ .*)' green | colout '(Successfully\ installed\ .*)' green | colout '(Downloading\ .*)' orange | colout '(Using\ cached\ .*)' orange
+    cd $env
+    bin/pip install -U pip | colout 'up\-to\-date\:\ (.*)\ in' purple | colout 'in\ (.*)' blue | colout 'up-to-date' green | colout 'Collecting\ (.*)' purple | colout 'packages\:\ (.*)' purple | colout 'installation\:\ (.*)' purple | colout 'Uninstalling\ (.*)' purple | colout '(Successfully\ uninstalled\ .*)' green | colout '(Successfully\ installed\ .*)' green | colout '(Downloading\ .*)' orange | colout '(Using\ cached\ .*)' orange
+    bin/pip freeze --local | grep -v '^\-e' | cut -d = -f 1 | sort | xargs bin/pip install -U | colout 'up\-to\-date\:\ (.*)\ in' purple | colout 'in\ (.*)' blue | colout 'up-to-date' green | colout 'Collecting\ (.*)' purple | colout 'packages\:\ (.*)' purple | colout 'installation\:\ (.*)' purple | colout 'Uninstalling\ (.*)' purple | colout '(Successfully\ uninstalled\ .*)' green | colout '(Successfully\ installed\ .*)' green | colout '(Downloading\ .*)' orange | colout '(Using\ cached\ .*)' orange
+    cd $orig_pwd
     echo
   done
 }
