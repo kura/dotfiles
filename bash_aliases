@@ -61,10 +61,6 @@ pip-upgrade() {
   done
 }
 
-# some more ls aliases
-alias ll='ls -alF'
-alias la='ls -A'
-alias l='ls -CF'
 alias python='python3.6'
 alias virtualenv='virtualenv-3.6'
 alias pip='pip3.6'
@@ -90,5 +86,11 @@ _virtualenvs () {
 }
 complete -o default -o nospace -F _virtualenvs wo
 
-alias ls='colorls -l'
 alias ack='pt'
+
+alias update='dist-upgrade && pip-upgrade && atom-update'
+
+alias ls='colorls -r'
+alias l='ls'
+alias ll='ls -l'
+alias la='ls -l -A'
