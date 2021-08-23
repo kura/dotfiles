@@ -12,7 +12,7 @@ alias ll="ls -lg --git --time-style=long-iso --color-scale"
 alias la="ll -a"
 alias lt="ll -T"
 alias bat="batcat"
-alias ipython="~/.local/bin/ipython"
+unalias ipython
 
 git() {
   case $@ in
