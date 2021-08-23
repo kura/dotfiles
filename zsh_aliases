@@ -1,0 +1,101 @@
+alias upgrade="sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y && sudo apt autoclean -y && pipx upgrade-all && upgrade-pyenv && upgrade-p10k && nextcloudify && omz update"
+alias reload="exec $SHELL"
+alias sudo="sudo -E"
+alias python="/usr/bin/python3"
+alias pip="/usr/bin/pip3"
+alias ack="pt"
+alias sab="sudo /etc/init.d/sabnzbdplus start"
+alias howdoi="howdoi -cn 5"
+alias icdiff="icdiff -HN"
+alias ls="exa --icons"
+alias ll="ls -lg --git --time-style=long-iso --color-scale"
+alias la="ll -a"
+alias lt="ll -T"
+alias bat="batcat"
+alias ipython="~/.local/bin/ipython"
+
+git() {
+  case $@ in
+    undo|sy|sync|sw|switch|pub|publish|unp|unpublish|rs|resync|branches)
+      cmd='legit'
+      ;;
+    *)
+      cmd='hub'
+      ;;
+  esac
+  command "$cmd" "$@"
+}
+
+fkill() {
+  local pid
+  if [ "$UID" != "0" ]; then
+    pid=$(ps -f -u $UID | sed 1d | fzf -m | awk '{print $2}')
+  else
+    pid=$(ps -ef | sed 1d | fzf -m | awk '{print $2}')
+  fi
+
+  if [ "x$pid" != "x" ]
+  then
+    echo $pid | xargs kill -${1:-9}
+  fi
+}
+
+# tm - create new tmux session, or switch to existing one. Works from within tmux too. (@bag-man)
+# `tm` will allow you to select your tmux session via fzf.
+# `tm irc` will attach to the irc session (if it exists), else it will create it.
+
+tm() {
+  [[ -n "$TMUX" ]] && change="switch-client" || change="attach-session"
+  if [ $1 ]; then
+    tmux $change -t "$1" 2>/dev/null || (tmux new-session -d -s $1 && tmux $change -t "$1"); return
+  fi
+  session=$(tmux list-sessions -F "#{session_name}" 2>/dev/null | fzf --exit-0) &&  tmux $change -t "$session" || echo "No sessions found."
+}
+
+copy_dlss() {
+  find /mnt/c/Program\ Files\ \(x86\)/Steam/steamapps/common /mnt/d/Games /mnt/g/Games -name "nvngx_dlss.dll" | grep -v 3DMark | while read f
+  do
+    cp /mnt/e/dlss/nvngx_dlss.dll "${f}"
+  done
+}    
+
+nextcloudify() {
+  pipx list > /mnt/c/Users/kurah/Nextcloud/dotfiles/pipx-packages
+  for f in gitconfig gitignore zsh_aliases zshenv zshrc
+  do
+    cp "${HOME}/.${f}" "/mnt/c/Users/kurah/Nextcloud/dotfiles/${f}"
+  done
+  cp $HOME/.ssh/config /mnt/c/Users/kurah/Nextcloud/dotfiles/ssh/config
+  cp -R $HOME/.oh-my-zsh/custom/* /mnt/c/Users/kurah/Nextcloud/dotfiles/oh-my-zsh/custom/
+}
+
+upgrade-p10k() {
+  cur_dir=$PWD
+  cd ~/.oh-my-zsh/custom/themes/powerlevel10k
+  git fetch
+  git rebase origin/master
+  cd $cur_dir
+}
+
+upgrade-pyenv() {
+  cur_dir=$PWD
+  cd ~/.pyenv
+  git fetch
+  git rebase
+  cd $cur_dir
+
+  for f in `/usr/bin/ls $HOME/.pyenv/versions`
+  do
+    read < <( .pyenv/versions/$f/bin/pip install -qqqU pip > /dev/null & echo $! )
+    pid=$REPLY
+    i=0
+    spin='⣷⣯⣟⡿⢿⣻⣽⣾'
+    while [ -e /proc/$pid ]
+    do
+      i=$(( (i+1) %8 ))
+      echo -ne "\r${spin:$i:1} Upgrading pip in ${f}  "
+      sleep .1
+    done
+    echo -e ""
+  done
+}

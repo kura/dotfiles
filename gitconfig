@@ -1,0 +1,69 @@
+[alias]
+  co = checkout
+  ci = commit
+  st = status
+  br = branch
+  tag = tag -s
+  lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+  lc = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit -p
+  type = cat-file -t
+  dump = cat-file -p
+  branches = branches
+  undo = undo
+  sync = sync
+  sy = sync
+  resync = resync
+  rs = resync
+  switch = switch
+  sw = switch
+  publish = publish
+  pub = publish
+  unpublish = unpublish
+  unp = unpublish
+
+[user]
+  name = Kura
+  email = kura.hax@gmail.com
+  signingkey = CB361A5467937A6D58AE8062ABD20EBD00AE065E
+
+[github]
+  user = kura
+
+[core]
+  excludesfile = /home/kura/.gitignore
+
+[hub]
+  protocol = ssh
+
+[push]
+  default = matching
+
+[transfer]
+  fsckobjects = true
+
+[fetch]
+  fsckobjects = true
+
+[receive]
+  fsckObjects = true
+
+[icdiff]
+  options = --highlight --line-numbers
+
+[pager]
+  diff = delta
+  log = delta
+  reflog = delta
+  show = delta
+
+[interactive]
+  diffFilter = delta --color-only
+
+[delta]
+  features = side-by-side line-numbers decorations
+  whitespace-error-style = 22 reverse
+
+[delta "decorations"]
+  commit-decoration-style = bold yellow box ul
+  file-style = bold yellow ul
+  file-decoration-style = none
