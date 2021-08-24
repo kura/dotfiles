@@ -1,0 +1,9 @@
+#!/bin/sh
+for f in gitconfig gitignore zsh_aliases zshenv zshrc
+do
+  cp "${HOME}/.${f}" "${f}"
+  if [ $f = "gitconfig" ]
+  then
+    sed -i '/token = /d' gitconfig
+  fi
+done
