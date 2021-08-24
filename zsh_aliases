@@ -92,10 +92,9 @@ upgrade-pyenv() {
     spin='⣷⣯⣟⡿⢿⣻⣽⣾'
     while [ -e /proc/$pid ]
     do
+      printf "%s Upgrading pip in %s                    \r" "${spin:$i:1}" "${f}"
       i=$(( (i+1) %8 ))
-      echo -ne "\r${spin:$i:1} Upgrading pip in ${f}  "
       sleep .1
     done
-    echo -e ""
   done
 }
