@@ -61,7 +61,7 @@ copy_dlss() {
 
 nextcloudify() {
   pipx list > /mnt/c/Users/kurah/Nextcloud/dotfiles/pipx-packages
-  for f in gitconfig gitignore zsh_aliases zshenv zshrc
+  for f in direnvrc gitconfig gitignore zsh_aliases zshenv zshrc
   do
     cp "${HOME}/.${f}" "/mnt/c/Users/kurah/Nextcloud/dotfiles/${f}"
   done
@@ -79,7 +79,7 @@ upgrade-p10k() {
 
 upgrade-pyenv() {
   cur_dir=$PWD
-  cd ~/.pyenv
+  cd $HOME/.pyenv
   git fetch
   git rebase
   cd $cur_dir

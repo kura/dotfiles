@@ -1,5 +1,5 @@
 #!/bin/sh
-for f in gitconfig gitignore zsh_aliases zshenv zshrc
+for f in direnvrc gitconfig gitignore zsh_aliases zshenv zshrc
 do
   cp "${HOME}/.${f}" "${f}"
   if [ $f = "gitconfig" ]
