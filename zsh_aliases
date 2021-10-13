@@ -12,6 +12,7 @@ alias ll="ls -lg --git --time-style=long-iso --color-scale"
 alias la="ll -a"
 alias lt="ll -T"
 alias bat="batcat"
+
 unalias ipython
 
 git() {
@@ -98,4 +99,9 @@ upgrade-pyenv() {
       sleep .1
     done
   done
+}
+
+backup() {
+  h=$1
+  ssh $h "sudo dd if=/dev/mmcblk0 bs=100M | gzip -1 -" | dd of=/mnt/f/$h.home.arpa-backup.img.gz bs=100M
 }
