@@ -62,7 +62,7 @@ copy_dlss() {
 
 nextcloudify() {
   pipx list > /mnt/c/Users/kurah/Nextcloud/dotfiles/pipx-packages
-  for f in direnvrc gitconfig gitignore zsh_aliases zshenv zshrc
+  for f in direnvrc gitconfig gitignore gitallowedsigners zsh_aliases zshenv zshrc
   do
     cp "${HOME}/.${f}" "/mnt/c/Users/kurah/Nextcloud/dotfiles/${f}"
   done
