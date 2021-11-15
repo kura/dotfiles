@@ -17,3 +17,4 @@ eval "$(pyenv init --path)"
 eval "$(pyenv init -)"
 eval "$(pyenv virtualenv-init -)"
 eval "$(direnv hook zsh)"
+source $HOME/.keychain/Gwen-sh
