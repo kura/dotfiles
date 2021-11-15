@@ -23,8 +23,8 @@
 
 [user]
   name = Kura
-  email = kura.hax@gmail.com
-  signingkey = CB361A5467937A6D58AE8062ABD20EBD00AE065E
+  email = kura@kura.gg
+  signingkey = /home/kura/.ssh/id_ed25519
 
 [github]
   user = kura
@@ -70,3 +70,9 @@
 
 [init]
   defaultBranch = main
+
+[gpg]
+  format = ssh
+
+[gpg "ssh"]
+  allowedSignersFile = /home/kura/.gitallowedsigners
