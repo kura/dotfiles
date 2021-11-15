@@ -1,6 +1,6 @@
 [alias]
   co = checkout
-  ci = commit
+  ci = commit -S
   st = status
   br = branch
   tag = tag -s
@@ -23,7 +23,7 @@
 
 [user]
   name = Kura
-  email = kura@kura.gg
+  email = kura.hax@gmail.com
   signingkey = /home/kura/.ssh/id_ed25519
 
 [github]
