@@ -58,7 +58,11 @@ nextcloudify() {
   for f in direnvrc gitconfig gitignore gitallowedsigners zsh_aliases zshenv zshrc
   do
     cp "${HOME}/.${f}" "/mnt/c/Users/kurah/Nextcloud/dotfiles/${f}"
-  done
+    if [ $f = "gitconfig" ]
+    then
+      sed -i '/token = /d' /mnt/c/Users/kurah/Nextcloud/dotfiles/gitconfig
+    fi
+    done
   cp $HOME/.ssh/config /mnt/c/Users/kurah/Nextcloud/dotfiles/ssh/config
   cp -R $HOME/.oh-my-zsh/custom/* /mnt/c/Users/kurah/Nextcloud/dotfiles/oh-my-zsh/custom/
   pipx list > /mnt/c/Users/kurah/Nextcloud/dotfiles/pipx-packages
