@@ -12,19 +12,12 @@ alias ll="ls -lg --git --time-style=long-iso --color-scale"
 alias la="ll -a"
 alias lt="ll -T"
 alias bat="batcat"
+alias jupyter-notebook="jupyter-notebook --no-browser"
 
 unalias ipython
 
-git() {
-  case $@ in
-    undo|sy|sync|sw|switch|pub|publish|unp|unpublish|rs|resync|branches)
-      cmd='legit'
-      ;;
-    *)
-      cmd='hub'
-      ;;
-  esac
-  command "$cmd" "$@"
+hub() {
+  echo "Try 'gh' instead"
 }
 
 fkill() {

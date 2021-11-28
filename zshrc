@@ -83,6 +83,11 @@ plugins=(
     pip
     python
     tox
+    gh
+    virtualenv
+    screen
+    rsync
+    direnv
 )
 
 ZSH_DISABLE_COMPFIX=true
