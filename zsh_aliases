@@ -13,6 +13,7 @@ alias la="ll -a"
 alias lt="ll -T"
 alias bat="batcat"
 alias jupyter-notebook="jupyter-notebook --no-browser"
+alias rst="/home/kura/.local/venvs/rich_rst/bin/python3 -m rich_rst"
 
 unalias ipython
 
