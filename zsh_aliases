@@ -4,7 +4,6 @@ alias sudo="sudo -E"
 alias python="/usr/bin/python3"
 alias pip="/usr/bin/pip3"
 alias ack="pt"
-alias sab="sudo /etc/init.d/sabnzbdplus start"
 alias howdoi="howdoi -cn 5"
 alias icdiff="icdiff -HN"
 alias ls="exa --icons"
@@ -14,8 +13,18 @@ alias lt="ll -T"
 alias bat="batcat"
 alias jupyter-notebook="jupyter-notebook --no-browser"
 alias rst="/home/kura/.local/venvs/rich_rst/bin/python3 -m rich_rst"
+alias youtube-dl="yt-dlp"
 
 unalias ipython
+
+dig() {
+  if [[ "$@" =~ .*"@".* ]]
+  then
+    q $@
+  else
+    q @192.168.1.253 $@
+  fi
+}
 
 hub() {
   echo "Try 'gh' instead"
@@ -102,4 +111,12 @@ upgrade-pyenv() {
 backup() {
   h=$1
   ssh $h "sudo dd if=/dev/mmcblk0 bs=100M | gzip -1 -" | dd of=/mnt/f/$h.home.arpa-backup.img.gz bs=100M
+}
+
+backup-telegraf() {
+  base="/mnt/c/Users/kurah/Nextcloud/Grafana Config"
+  for h in p g vpn
+  do
+    scp -r $h:/etc/telegraf "$base/$h"
+  done
 }
