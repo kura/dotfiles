@@ -1,4 +1,4 @@
-alias upgrade="sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y && sudo apt autoclean -y && pipx upgrade-all && upgrade-pyenv && upgrade-p10k && nextcloudify && omz update"
+alias upgrade="sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y && sudo apt autoclean -y && pipx upgrade-all --include-injected && upgrade-pyenv && upgrade-p10k && nextcloudify && omz update"
 alias reload="exec $SHELL"
 alias sudo="sudo -E"
 alias python="/usr/bin/python3"
@@ -64,7 +64,7 @@ copy_dlss() {
 }    
 
 nextcloudify() {
-  pipx list > /mnt/c/Users/kurah/Nextcloud/dotfiles/pipx-packages
+  pipx list --include-injected > /mnt/c/Users/kurah/Nextcloud/dotfiles/pipx-packages
   for f in direnvrc gitconfig gitignore gitallowedsigners zsh_aliases zshenv zshrc
   do
     cp "${HOME}/.${f}" "/mnt/c/Users/kurah/Nextcloud/dotfiles/${f}"
@@ -75,7 +75,8 @@ nextcloudify() {
     done
   cp $HOME/.ssh/config /mnt/c/Users/kurah/Nextcloud/dotfiles/ssh/config
   cp -R $HOME/.oh-my-zsh/custom/* /mnt/c/Users/kurah/Nextcloud/dotfiles/oh-my-zsh/custom/
-  pipx list > /mnt/c/Users/kurah/Nextcloud/dotfiles/pipx-packages
+  backup-telegraf
+  backup-g-wireguard
 }
 
 upgrade-p10k() {
@@ -115,8 +116,25 @@ backup() {
 
 backup-telegraf() {
   base="/mnt/c/Users/kurah/Nextcloud/Grafana Config"
-  for h in p g vpn
+  for h in p g vpn mon
   do
     scp -r $h:/etc/telegraf "$base/$h"
+  done
+  scp -r g:/etc/influxdb "$base/g"
+}
+
+backup-g-wireguard() {
+  base="/mnt/c/Users/kurah/Nextcloud/Grafana Config/g/wireguard"
+  for f in wg0 wg1
+  do
+    ssh g "sudo cat /etc/wireguard/$f.conf" | sed '/PrivateKey = /d' | sed '/PreSharedKey = /d' > "$base/$f.conf"
+  done
+}
+
+backup-wireguard() {
+  base="/mnt/c/Users/kurah/Nextcloud/Wireguard configs"
+  for h in p vpn mon
+  do
+    ssh $h "sudo cat /etc/wireguard/wg0.conf" | sed '/PrivateKey = /d' | sed '/PreSharedKey = /d' > "$base/$h/wg0.conf"
   done
 }
