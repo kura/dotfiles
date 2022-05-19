@@ -1,4 +1,4 @@
-alias upgrade="sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y && sudo apt autoclean -y && pipx upgrade-all --include-injected && upgrade-pyenv && upgrade-p10k && nextcloudify && omz update"
+alias upgrade="sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y && sudo apt autoclean -y && pipx upgrade-all --include-injected && upgrade-pyenv && upgrade-p10k && omz update nextcloudify"
 alias reload="exec $SHELL"
 alias sudo="sudo -E"
 alias python="/usr/bin/python3"
