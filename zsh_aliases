@@ -14,6 +14,7 @@ alias bat="batcat"
 alias jupyter-notebook="jupyter-notebook --no-browser"
 alias rst="/home/kura/.local/venvs/rich_rst/bin/python3 -m rich_rst"
 alias youtube-dl="yt-dlp"
+alias podman_clean="podman system prune --all --force && podman rmi --all"
 
 unalias ipython
 
@@ -78,6 +79,7 @@ nextcloudify() {
   cp -R $HOME/.oh-my-zsh/custom/* /mnt/c/Users/kurah/Nextcloud/dotfiles/oh-my-zsh/custom/
   backup-telegraf
   backup-g-wireguard
+  backup-remote-wireguard
 }
 
 upgrade-p10k() {
@@ -132,10 +134,20 @@ backup-g-wireguard() {
   done
 }
 
-backup-wireguard() {
+backup-remote-wireguard() {
   base="/mnt/c/Users/kurah/Nextcloud/Wireguard configs"
   for h in p vpn mon
   do
     ssh $h "sudo cat /etc/wireguard/wg0.conf" | sed '/PrivateKey = /d' | sed '/PreSharedKey = /d' > "$base/$h/wg0.conf"
   done
+}
+
+backup-uptime-kuma() {
+  base="/mnt/c/Users/kurah/Nextcloud/uptime-kuma.tar.xz"
+  ssh mon 'tar cvf - /docker_data/uptime_kuma' | xz -9e > $base
+}
+
+backup-influx() {
+  base="/mnt/c/Users/kurah/Nextcloud/g-influxdb.tar.xz"
+  ssh g 'sudo tar cvf - /data/influxdb' | xz -9e > $base
 }
