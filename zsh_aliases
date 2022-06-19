@@ -144,10 +144,10 @@ backup-remote-wireguard() {
 
 backup-uptime-kuma() {
   base="/mnt/c/Users/kurah/Nextcloud/uptime-kuma.tar.xz"
-  ssh mon 'tar cvf - /docker_data/uptime_kuma' | xz -9e > $base
+  ssh mon 'sudo tar cf - /docker_data/uptime_kuma' | 7zz a -txz -mx9 -si $base
 }
 
 backup-influx() {
   base="/mnt/c/Users/kurah/Nextcloud/g-influxdb.tar.xz"
-  ssh g 'sudo tar cvf - /data/influxdb' | xz -9e > $base
+  ssh g 'sudo tar cf - /data/influxdb' | 7zz a -txz -mx9 -si $base
 }
