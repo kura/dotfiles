@@ -1,8 +1,6 @@
 alias upgrade="sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y && sudo apt autoclean -y && pipx upgrade-all --include-injected && upgrade-pyenv && upgrade-p10k && omz update nextcloudify"
 alias reload="exec $SHELL"
 alias sudo="sudo -E"
-alias python="/usr/bin/python3"
-alias pip="/usr/bin/pip3"
 alias ack="pt"
 alias howdoi="howdoi -cn 5"
 alias icdiff="icdiff -HN"
@@ -14,7 +12,9 @@ alias bat="batcat"
 alias jupyter-notebook="jupyter-notebook --no-browser"
 alias rst="/home/kura/.local/venvs/rich_rst/bin/python3 -m rich_rst"
 alias youtube-dl="yt-dlp"
+alias yt="yt-dlp -f b"
 alias podman_clean="podman system prune --all --force && podman rmi --all"
+alias gokey="gokey -s ${HOME}/.gokeyseedfile -l 32"
 
 unalias ipython
 
@@ -23,7 +23,7 @@ dig() {
   then
     q $@
   else
-    q @192.168.1.253 $@
+    q @10.0.10.253 $@
   fi
 }
 
@@ -77,6 +77,7 @@ nextcloudify() {
   done
   cp $HOME/.ssh/config /mnt/c/Users/kurah/Nextcloud/dotfiles/ssh/config
   cp -R $HOME/.oh-my-zsh/custom/* /mnt/c/Users/kurah/Nextcloud/dotfiles/oh-my-zsh/custom/
+  cp -R $HOME/.config/yt-dlp /mnt/c/Users/kurah/Nextcloud/dotfiles/config
   backup-telegraf
   backup-g-wireguard
   backup-remote-wireguard
@@ -126,6 +127,13 @@ backup-telegraf() {
   scp -r g:/etc/influxdb "$base/g"
 }
 
+restart-telegraf() {
+  for h in p g vpn mon
+  do
+    ssh $h 'sudo setcap CAP_NET_ADMIN+epi /usr/bin/telegraf && sudo systemctl restart telegraf'
+  done
+}
+
 backup-g-wireguard() {
   base="/mnt/c/Users/kurah/Nextcloud/Grafana Config/g/wireguard"
   for f in wg0 wg1
@@ -143,11 +151,13 @@ backup-remote-wireguard() {
 }
 
 backup-uptime-kuma() {
-  base="/mnt/c/Users/kurah/Nextcloud/uptime-kuma.tar.xz"
-  ssh mon 'sudo tar cf - /docker_data/uptime_kuma' | 7zz a -txz -mx9 -si $base
+  tmp="/tmp/uptime-kuma.tar.xz"
+  base="/mnt/c/Users/kurah/Nextcloud/uptime-kuma.tar.zst"
+  ssh mon 'sudo tar cvf - /docker_data/uptime_kuma --sort=name' | zstd -T0 -19 --long=27 --stdout > $base
 }
 
 backup-influx() {
-  base="/mnt/c/Users/kurah/Nextcloud/g-influxdb.tar.xz"
-  ssh g 'sudo tar cf - /data/influxdb' | 7zz a -txz -mx9 -si $base
+  tmp="/tmp/g-influxdb.tar.xz"
+  base="/mnt/c/Users/kurah/Nextcloud/g-influxdb.tar.zst"
+  ssh g 'sudo tar cvf - /data/influxdb --sort=name' | zstd -T0 -19 --long=27 --stdout > $base
 }
