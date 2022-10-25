@@ -13,6 +13,7 @@ alias jupyter-notebook="jupyter-notebook --no-browser"
 alias rst="/home/kura/.local/venvs/rich_rst/bin/python3 -m rich_rst"
 alias youtube-dl="yt-dlp"
 alias yt="yt-dlp -f b"
+alias yt-mp3="yt-dlp --geo-bypass --no-mtime --ignore-config -f "ba" -x --audio-format mp3 $f -o '/mnt/e/Downloads/%(title)s.%(ext)s'"
 alias podman_clean="podman system prune --all --force && podman rmi --all"
 alias gokey="gokey -s ${HOME}/.gokeyseedfile -l 32"
 
@@ -120,7 +121,7 @@ backup() {
 
 backup-telegraf() {
   base="/mnt/c/Users/kurah/Nextcloud/Grafana Config"
-  for h in p g vpn mon
+  for h in p g vpn
   do
     scp -r $h:/etc/telegraf "$base/$h"
   done
@@ -128,7 +129,7 @@ backup-telegraf() {
 }
 
 restart-telegraf() {
-  for h in p g vpn mon
+  for h in p g vpn
   do
     ssh $h 'sudo setcap CAP_NET_ADMIN+epi /usr/bin/telegraf && sudo systemctl restart telegraf'
   done
@@ -144,20 +145,15 @@ backup-g-wireguard() {
 
 backup-remote-wireguard() {
   base="/mnt/c/Users/kurah/Nextcloud/Wireguard configs"
-  for h in p vpn mon
+  for h in p vpn
   do
     ssh $h "sudo cat /etc/wireguard/wg0.conf" | sed '/PrivateKey = /d' | sed '/PreSharedKey = /d' > "$base/$h/wg0.conf"
   done
 }
 
-backup-uptime-kuma() {
-  tmp="/tmp/uptime-kuma.tar.xz"
-  base="/mnt/c/Users/kurah/Nextcloud/uptime-kuma.tar.zst"
-  ssh mon 'sudo tar cvf - /docker_data/uptime_kuma --sort=name' | zstd -T0 -19 --long=27 --stdout > $base
-}
-
 backup-influx() {
-  tmp="/tmp/g-influxdb.tar.xz"
   base="/mnt/c/Users/kurah/Nextcloud/g-influxdb.tar.zst"
   ssh g 'sudo tar cvf - /data/influxdb --sort=name' | zstd -T0 -19 --long=27 --stdout > $base
+  par2 create -v -m16777216 -t16 -T16 -r20 -n3 $base
+  par2 verify -v -m16777216 -t16 -T16 $base
 }
