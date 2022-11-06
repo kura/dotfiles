@@ -77,8 +77,9 @@ nextcloudify() {
     fi
   done
   cp $HOME/.ssh/config /mnt/c/Users/kurah/Nextcloud/dotfiles/ssh/config
-  cp -R $HOME/.oh-my-zsh/custom/* /mnt/c/Users/kurah/Nextcloud/dotfiles/oh-my-zsh/custom/
-  cp -R $HOME/.config/yt-dlp /mnt/c/Users/kurah/Nextcloud/dotfiles/config
+  sudo rm -rf /mnt/c/Users/kurah/Nextcloud/dotfiles/oh-my-zsh/custom/*
+  sudo cp -R $HOME/.oh-my-zsh/custom/* /mnt/c/Users/kurah/Nextcloud/dotfiles/oh-my-zsh/custom/
+  sudo cp -R $HOME/.config/yt-dlp /mnt/c/Users/kurah/Nextcloud/dotfiles/config
   backup-telegraf
   backup-g-wireguard
   backup-remote-wireguard
@@ -166,14 +167,15 @@ copy-to-backup-drive() {
   echo "sudo mount -t drvfs h: ${usb_drive}"
   sudo mount -t drvfs h: $usb_drive
 
-  echo "find ${nx} -name '*.par2' -delete"
-  sudo find $nx -name "*.par2" -delete
+  echo "find ${usb_drive} -name '*.par2' -delete"
+  sudo find $usb_drive -name "*.par2" -delete
 
   echo "sudo rsync -avh --progress --exclude '\$RECYCLE.BIN' --exclude '.owncloudsync.log' --exclude '.sync*' --exclude 'Desktop.ini' ${nx} ${usb_drive}"
-  sudo rsync -avht --progress \
+  sudo rsync -avh --progress \
              --exclude '\$RECYCLE.BIN' \
              --exclude '.owncloudsync.log' \
              --exclude '.sync*' \
              --exclude 'Desktop.ini' \
              $nx $usb_drive
+  sudo unmount $usb_drive
 }
