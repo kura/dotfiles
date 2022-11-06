@@ -137,7 +137,7 @@ restart-telegraf() {
 
 backup-g-wireguard() {
   base="/mnt/c/Users/kurah/Nextcloud/Grafana Config/g/wireguard"
-  for f in wg0 wg1
+  for f in wg0
   do
     ssh g "sudo cat /etc/wireguard/$f.conf" | sed '/PrivateKey = /d' | sed '/PreSharedKey = /d' > "$base/$f.conf"
   done
@@ -153,7 +153,8 @@ backup-remote-wireguard() {
 
 backup-influx() {
   base="/mnt/c/Users/kurah/Nextcloud/g-influxdb.tar.zst"
+  rm "${base}*.par2"
   ssh g 'sudo tar cvf - /data/influxdb --sort=name' | zstd -T0 -19 --long=27 --stdout > $base
-  par2 create -v -m16777216 -t16 -T16 -r20 -n3 $base
+  par2 create -v -m16777216 -t16 -T16 -r30 -n5 $base
   par2 verify -v -m16777216 -t16 -T16 $base
 }
