@@ -158,3 +158,22 @@ backup-influx() {
   par2 create -v -m16777216 -t16 -T16 -r30 -n5 $base
   par2 verify -v -m16777216 -t16 -T16 $base
 }
+
+copy-to-backup-drive() {
+  nx="/mnt/c/Users/kurah/Nextcloud/"
+  usb_drive="/mnt/h"
+
+  echo "sudo mount -t drvfs h: ${usb_drive}"
+  sudo mount -t drvfs h: $usb_drive
+
+  echo "find ${nx} -name '*.par2' -delete"
+  sudo find $nx -name "*.par2" -delete
+
+  echo "sudo rsync -avh --progress --exclude '\$RECYCLE.BIN' --exclude '.owncloudsync.log' --exclude '.sync*' --exclude 'Desktop.ini' ${nx} ${usb_drive}"
+  sudo rsync -avht --progress \
+             --exclude '\$RECYCLE.BIN' \
+             --exclude '.owncloudsync.log' \
+             --exclude '.sync*' \
+             --exclude 'Desktop.ini' \
+             $nx $usb_drive
+}
