@@ -177,5 +177,5 @@ copy-to-backup-drive() {
              --exclude '.sync*' \
              --exclude 'Desktop.ini' \
              $nx $usb_drive
-  sudo unmount $usb_drive
+  sudo umount $usb_drive
 }
