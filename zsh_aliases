@@ -127,6 +127,7 @@ backup-telegraf() {
     scp -r $h:/etc/telegraf "$base/$h"
   done
   scp -r g:/etc/influxdb "$base/g"
+  scp -r p:/etc/nginx "$base/p"
 }
 
 restart-telegraf() {
@@ -153,22 +154,39 @@ backup-remote-wireguard() {
 }
 
 backup-influx() {
-  base="/mnt/c/Users/kurah/Nextcloud/g-influxdb.tar.zst"
-  rm "${base}*.par2"
-  ssh g 'sudo tar cvf - /data/influxdb --sort=name' | zstd -T0 -19 --long=27 --stdout > $base
-  par2 create -v -m16777216 -t16 -T16 -r30 -n5 $base
-  par2 verify -v -m16777216 -t16 -T16 $base
+  base="/mnt/c/Users/kurah/Nextcloud/"
+  fname="g-influxdb.tar.zst"
+  fpath="${base}${fname}"
+  find $base -name "${fname}*.par2" -delete
+  ssh g 'sudo tar cvf - /data/influxdb --sort=name' | zstd -T0 -19 --long=27 --stdout > $fpath
+  # ssh g 'cd /data/influxdb && sudo find . -print0 | sort -z | sed "s|^./||" | sudo tar cvf - --no-recursion --null -T -' | zstd -T0 -19 --long=27 --stdout > $fpath
+  par2 create -v -m16777216 -t16 -T16 -r30 -n5 $fpath
+  par2 verify -v -m16777216 -t16 -T16 $fpath
+}
+
+backup-media-containers() {
+  base="/mnt/c/Users/kurah/Nextcloud/"
+  fname="media-containers.tar.zst"
+  fpath="${base}${fname}"
+  find $base -name "${fname}*.par2" -delete
+  ssh nas 'cd /share/CACHEDEV1_DATA/DockerData && find . -name ".streams" -prune -o -print0 | sort -z | sed "s|^./||" | tar cvf - --no-recursion --null -T -' | zstd -T0 -19 --long=27 --stdout > $fpath
+  par2 create -v -m16777216 -t16 -T16 -r30 -n5 $fpath
+  par2 verify -v -m16777216 -t16 -T16 $fpath
 }
 
 copy-to-backup-drive() {
   nx="/mnt/c/Users/kurah/Nextcloud/"
   usb_drive="/mnt/h"
+  oa="/mnt/e/OpenAudible/"
 
   echo "sudo mount -t drvfs h: ${usb_drive}"
   sudo mount -t drvfs h: $usb_drive
 
   echo "find ${usb_drive} -name '*.par2' -delete"
   sudo find $usb_drive -name "*.par2" -delete
+
+  echo "sudo rm -rf ${usb_drive}/dotfiles/oh-my-zsh"
+  sudo rm -rf $usb_drive/dotfiles/oh-my-zsh
 
   echo "sudo rsync -avh --progress --exclude '\$RECYCLE.BIN' --exclude '.owncloudsync.log' --exclude '.sync*' --exclude 'Desktop.ini' ${nx} ${usb_drive}"
   sudo rsync -avh --progress \
@@ -177,5 +195,7 @@ copy-to-backup-drive() {
              --exclude '.sync*' \
              --exclude 'Desktop.ini' \
              $nx $usb_drive
+  echo "sudo rsync -avh --progress ${oa} ${usb_drive}/OpenAudible/"
+  sudo rsync -avh --progress $oa $usb_drive/OpenAudible/
   sudo umount $usb_drive
 }
