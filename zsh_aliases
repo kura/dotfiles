@@ -127,6 +127,7 @@ backup-telegraf() {
     scp -r $h:/etc/telegraf "$base/$h"
   done
   scp -r g:/etc/influxdb "$base/g"
+  scp -r g:/etc/grafana "$base/g"
   scp -r p:/etc/nginx "$base/p"
 }
 
@@ -153,14 +154,27 @@ backup-remote-wireguard() {
   done
 }
 
-backup-influx() {
+backup-influxdb-grafana-mysql() {
   base="/mnt/c/Users/kurah/Nextcloud/"
-  fname="g-influxdb.tar.zst"
+  fname="g-influxdb-grafana-mysql.tar.zst"
   fpath="${base}${fname}"
+
+  echo "$base -name \"${fname}*.par2\" -delete"
   find $base -name "${fname}*.par2" -delete
-  ssh g 'sudo tar cvf - /data/influxdb --sort=name' | zstd -T0 -19 --long=27 --stdout > $fpath
+
+  echo "ssh g 'sudo mysql -u root grafana > /grafana.sql'"
+  ssh g 'sudo mysqldump -u root grafana > /grafana.sql'
+
+  echo "ssh g 'sudo tar cvf - /data/influxdb /var/lib/grafana /tmp/grafana.sql --sort=name' | zstd -T0 -19 --long=27 --stdout > $fpath"
+  ssh g 'sudo tar cvf - /data/influxdb /var/lib/grafana /grafana.sql --sort=name' | zstd -T0 -19 --long=27 --stdout > $fpath
   # ssh g 'cd /data/influxdb && sudo find . -print0 | sort -z | sed "s|^./||" | sudo tar cvf - --no-recursion --null -T -' | zstd -T0 -19 --long=27 --stdout > $fpath
+
+  echo "ssh g 'sudo rm /grafana.sql'"
+  ssh g 'sudo rm /grafana.sql'
+
+  echo "par2 create -v -m16777216 -t16 -T16 -r30 -n5 $fpath"
   par2 create -v -m16777216 -t16 -T16 -r30 -n5 $fpath
+  echo "par2 verify -v -m16777216 -t16 -T16 $fpath"
   par2 verify -v -m16777216 -t16 -T16 $fpath
 }
 
