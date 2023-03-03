@@ -16,6 +16,7 @@ alias yt="yt-dlp -f b"
 alias yt-mp3="yt-dlp --geo-bypass --no-mtime --ignore-config -f "ba" -x --audio-format mp3 $f -o '/mnt/e/Downloads/%(title)s.%(ext)s'"
 alias podman_clean="podman system prune --all --force && podman rmi --all"
 alias gokey="gokey -s ${HOME}/.gokeyseedfile -l 32"
+alias password="cat /dev/urandom | tr -dc "a-zA-Z0-9" | fold -w 32 | head -1"
 
 unalias ipython
 
