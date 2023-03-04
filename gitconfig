@@ -23,7 +23,7 @@
 
 [user]
   name = Kura
-  email = kura.hax@gmail.com
+  email = 
   signingkey = /home/kura/.ssh/id_ed25519
 
 [github]

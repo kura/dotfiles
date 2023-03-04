@@ -23,7 +23,7 @@ unalias ipython
 dig() {
   if [[ "$@" =~ .*"@".* ]]
   then
-    q $@
+    q -i $@
   else
     q @10.0.10.253 $@
   fi
@@ -74,7 +74,7 @@ nextcloudify() {
     cp "${HOME}/.${f}" "/mnt/c/Users/kurah/Nextcloud/dotfiles/${f}"
     if [ $f = "gitconfig" ]
     then
-      sed -i '/token = /d' /mnt/c/Users/kurah/Nextcloud/dotfiles/gitconfig
+      sed -i '/token = /d;s/email = .*/email = /g' /mnt/c/Users/kurah/Nextcloud/dotfiles/gitconfig
     fi
   done
   cp $HOME/.ssh/config /mnt/c/Users/kurah/Nextcloud/dotfiles/ssh/config
