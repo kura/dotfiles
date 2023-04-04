@@ -4,6 +4,6 @@ do
   cp "${HOME}/.${f}" "${f}"
   if [ $f = "gitconfig" ]
   then
-    sed -i '/token = /d' gitconfig
+    sed -i 's/token = .*/token = /g;s/email = .*/email = /g' gitconfig
   fi
 done

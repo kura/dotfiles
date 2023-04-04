@@ -14,5 +14,5 @@ eval "$(direnv hook zsh)"
 export FLYCTL_INSTALL="/home/kura/.fly"
 export PATH="$FLYCTL_INSTALL/bin:$PATH"
 
-/usr/bin/keychain --nogui $HOME/.ssh/id_ed25519
+/usr/bin/keychain --nogui $HOME/.ssh/id_ed25519 $HOME/.ssh/github_id_ed25519
 source $HOME/.keychain/Gwen-sh

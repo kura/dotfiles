@@ -88,6 +88,7 @@ plugins=(
     screen
     rsync
     direnv
+    flyctl
 )
 
 ZSH_DISABLE_COMPFIX=true
@@ -124,7 +125,7 @@ source $ZSH/oh-my-zsh.sh
 
 unalias ll
 unalias la
-unalias diff
+# unalias diff
 source $HOME/.zsh_aliases
 eval "$(register-python-argcomplete pipx)"
 cd ~

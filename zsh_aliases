@@ -13,17 +13,23 @@ alias jupyter-notebook="jupyter-notebook --no-browser"
 alias rst="/home/kura/.local/venvs/rich_rst/bin/python3 -m rich_rst"
 alias youtube-dl="yt-dlp"
 alias yt="yt-dlp -f b"
-alias yt-mp3="yt-dlp --geo-bypass --no-mtime --ignore-config -f "ba" -x --audio-format mp3 $f -o '/mnt/e/Downloads/%(title)s.%(ext)s'"
+alias yt-mp3="yt-dlp --geo-bypass --no-mtime --ignore-config -f 'ba' -x --audio-format mp3 $f -o '/mnt/e/Downloads/%(title)s.%(ext)s'"
 alias podman_clean="podman system prune --all --force && podman rmi --all"
 alias gokey="gokey -s ${HOME}/.gokeyseedfile -l 32"
-alias password="cat /dev/urandom | tr -dc "a-zA-Z0-9" | fold -w 32 | head -1"
+alias password="cat /dev/urandom | tr -dc 'a-zA-Z0-9\!$%^&8()-=_+[]{};#:@~\\\,./\|<>\?' | fold -w 32 | head -1"
 
 unalias ipython
+
+password_argon2() {
+  pword="$(password)"
+  echo "${pword}"
+  echo -n "${pword}" | argon2 "$(openssl rand -base64 32)" -e -id -k 65540 -t 3 -p 4
+}
 
 dig() {
   if [[ "$@" =~ .*"@".* ]]
   then
-    q -i $@
+    q $@
   else
     q @10.0.10.253 $@
   fi
@@ -74,7 +80,7 @@ nextcloudify() {
     cp "${HOME}/.${f}" "/mnt/c/Users/kurah/Nextcloud/dotfiles/${f}"
     if [ $f = "gitconfig" ]
     then
-      sed -i '/token = /d;s/email = .*/email = /g' /mnt/c/Users/kurah/Nextcloud/dotfiles/gitconfig
+      sed -i 's/token = .*/token = /g;s/email = .*/email = /g' /mnt/c/Users/kurah/Nextcloud/dotfiles/gitconfig 
     fi
   done
   cp $HOME/.ssh/config /mnt/c/Users/kurah/Nextcloud/dotfiles/ssh/config
@@ -163,18 +169,18 @@ backup-influxdb-grafana-mysql() {
   echo "$base -name \"${fname}*.par2\" -delete"
   find $base -name "${fname}*.par2" -delete
 
-  echo "ssh g 'sudo mysql -u root grafana > /grafana.sql'"
-  ssh g 'sudo mysqldump -u root grafana > /grafana.sql'
+  echo "ssh g 'sudo mysql -u root grafana > /tmp/grafana.sql && sudo mv /tmp/grafana.sql /'"
+  ssh g 'sudo mysqldump -u root grafana > /tmp/grafana.sql && sudo mv /tmp/grafana.sql /'
 
-  echo "ssh g 'sudo tar cvf - /data/influxdb /var/lib/grafana /tmp/grafana.sql --sort=name' | zstd -T0 -19 --long=27 --stdout > $fpath"
+  echo "ssh g 'sudo tar cvf - /data/influxdb /var/lib/grafana /grafana.sql --sort=name' | zstd -T0 -19 --long=27 --stdout > $fpath"
   ssh g 'sudo tar cvf - /data/influxdb /var/lib/grafana /grafana.sql --sort=name' | zstd -T0 -19 --long=27 --stdout > $fpath
   # ssh g 'cd /data/influxdb && sudo find . -print0 | sort -z | sed "s|^./||" | sudo tar cvf - --no-recursion --null -T -' | zstd -T0 -19 --long=27 --stdout > $fpath
 
   echo "ssh g 'sudo rm /grafana.sql'"
   ssh g 'sudo rm /grafana.sql'
 
-  echo "par2 create -v -m16777216 -t16 -T16 -r30 -n5 $fpath"
-  par2 create -v -m16777216 -t16 -T16 -r30 -n5 $fpath
+  echo "par2 create -v -m16777216 -t16 -T16 -r34 -n5 $fpath"
+  par2 create -v -m16777216 -t16 -T16 -r34 -n5 $fpath
   echo "par2 verify -v -m16777216 -t16 -T16 $fpath"
   par2 verify -v -m16777216 -t16 -T16 $fpath
 }
@@ -185,7 +191,7 @@ backup-media-containers() {
   fpath="${base}${fname}"
   find $base -name "${fname}*.par2" -delete
   ssh nas 'cd /share/CACHEDEV1_DATA/DockerData && find . -name ".streams" -prune -o -print0 | sort -z | sed "s|^./||" | tar cvf - --no-recursion --null -T -' | zstd -T0 -19 --long=27 --stdout > $fpath
-  par2 create -v -m16777216 -t16 -T16 -r30 -n5 $fpath
+  par2 create -v -m16777216 -t16 -T16 -r34 -n5 $fpath
   par2 verify -v -m16777216 -t16 -T16 $fpath
 }
 
@@ -203,14 +209,80 @@ copy-to-backup-drive() {
   echo "sudo rm -rf ${usb_drive}/dotfiles/oh-my-zsh"
   sudo rm -rf $usb_drive/dotfiles/oh-my-zsh
 
-  echo "sudo rsync -avh --progress --exclude '\$RECYCLE.BIN' --exclude '.owncloudsync.log' --exclude '.sync*' --exclude 'Desktop.ini' ${nx} ${usb_drive}"
-  sudo rsync -avh --progress \
+  echo "sudo rsync -avvvh --progress --exclude '\$RECYCLE.BIN' --exclude '.owncloudsync.log' --exclude '.sync*' --exclude 'Desktop.ini' ${nx} ${usb_drive}"
+  sudo rsync -avvvh --progress \
              --exclude '\$RECYCLE.BIN' \
              --exclude '.owncloudsync.log' \
              --exclude '.sync*' \
              --exclude 'Desktop.ini' \
              $nx $usb_drive
-  echo "sudo rsync -avh --progress ${oa} ${usb_drive}/OpenAudible/"
-  sudo rsync -avh --progress $oa $usb_drive/OpenAudible/
+  echo "sudo rsync -avvvh --progress ${oa} ${usb_drive}/OpenAudible/"
+  sudo rsync -avvvh --progress $oa $usb_drive/OpenAudible/
   sudo umount $usb_drive
+}
+
+backup-vaultwarden() {
+  fname=vaultwarden.tar.zst
+  base=/mnt/c/Users/kurah/Nextcloud/
+  vm_name="delicate-shape-1974"
+
+  echo "rm /tmp/vaultwarden.tar"
+  [ ! -e "/tmp/vaultwarden.tar" ] || rm /tmp/vaultwarden.tar
+
+  echo "find $base -name \"${fname}*.par2\" -delete"
+  find $base -name "${fname}*.par2" -delete
+
+  echo "flyctl ssh console -a \"${vm_name}\" -C \"tar cvf /tmp/vaultwarden.tar /data --sort=name\""
+  flyctl ssh console -a "${vm_name}" -C "tar cvf /tmp/vaultwarden.tar /data --sort=name"
+
+  echo "flyctl ssh sftp get -a \"${vm_name}\" \"/tmp/vaultwarden.tar\""
+  flyctl ssh sftp get -a "${vm_name}" "/tmp/vaultwarden.tar"
+
+  echo "flyctl ssh console -a \"${vm_name}\" -C \"rm /tmp/vaultwarden.tar\""
+  flyctl ssh console -a "${vm_name}" -C "rm /tmp/vaultwarden.tar"
+
+  echo "zstd -T0 -19 --long=27 \"/tmp/vaultwarden.tar\" -o \"/tmp/${fname}\""
+  zstd -T0 -19 --long=27 "/tmp/vaultwarden.tar" -o "/tmp/${fname}"
+
+  echo "mv \"/tmp/${fname}\" \"${base}\""
+  mv "/tmp/${fname}" "${base}"
+
+  echo "rm /tmp/vaultwarden.tar"
+  [ ! -e "/tmp/vaultwarden.tar" ] || rm /tmp/vaultwarden.tar
+
+  par2 create -v -m16777216 -t16 -T16 -r34 -n5 "${base}/${fname}"
+  par2 verify -v -m16777216 -t16 -T16 "${base}/${fname}"
+}
+
+backup-uptime-kuma() {
+  fname=uptime-kuma.tar.zst
+  base=/mnt/c/Users/kurah/Nextcloud/
+  vm_name="winter-forest-8776"
+
+  echo "rm /tmp/uptime-kuma.tar"
+  [ ! -e "/tmp/uptime-kuma.tar" ] || rm /tmp/uptime-kuma.tar
+
+  echo "find $base -name \"${fname}*.par2\" -delete"
+  find $base -name "${fname}*.par2" -delete
+
+  echo "flyctl ssh console -a \"${vm_name}\" -C \"tar cvf /tmp/uptime-kuma.tar /app/data --sort=name\""
+  flyctl ssh console -a "${vm_name}" -C "tar cvf /tmp/uptime-kuma.tar /app/data --sort=name"
+
+  echo "flyctl ssh sftp get -a \"${vm_name}\" \"/tmp/uptime-kuma.tar\""
+  flyctl ssh sftp get -a "${vm_name}" "/tmp/uptime-kuma.tar"
+
+  echo "flyctl ssh console -a \"${vm_name}\" -C \"rm /tmp/uptime-kuma.tar\""
+  flyctl ssh console -a "${vm_name}" -C "rm /tmp/uptime-kuma.tar"
+
+  echo "zstd -T0 -19 --long=27 \"/tmp/uptime-kuma.tar\" -o \"/tmp/${fname}\""
+  zstd -T0 -19 --long=27 "/tmp/uptime-kuma.tar" -o "/tmp/${fname}"
+
+  echo "mv \"/tmp/${fname}\" \"${base}\""
+  mv "/tmp/${fname}" "${base}"
+
+  echo "rm /tmp/uptime-kuma.tar"
+  [ ! -e "/tmp/uptime-kuma.tar" ] || rm /tmp/uptime-kuma.tar
+
+  par2 create -v -m16777216 -t16 -T16 -r34 -n5 "${base}/${fname}"
+  par2 verify -v -m16777216 -t16 -T16 "${base}/${fname}"
 }

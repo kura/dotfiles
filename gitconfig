@@ -28,6 +28,7 @@
 
 [github]
   user = kura
+  token = 
 
 [core]
   excludesfile = /home/kura/.gitignore
