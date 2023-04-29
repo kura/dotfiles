@@ -24,7 +24,7 @@
 [user]
   name = Kura
   email = 
-  signingkey = /home/kura/.ssh/id_ed25519
+  signingkey = /home/kura/.ssh/github_id_ed25519
 
 [github]
   user = kura
