@@ -107,6 +107,18 @@ upgrade-pyenv() {
   git rebase
   cd $cur_dir
 
+  find .pyenv/versions -maxdepth 1 -type d | grep ".pyenv/versions/" | sort | cut -d '/' -f 3 | while read v
+  do
+    maj_min=$(echo $v | sed 's/^\* ([0-9\.])*/$1/' | awk -F'.' '{print $1 "." $2}')
+    latest=$(pyenv install --list | sed 's/\s*//' | egrep "^$maj_min" | tail -n 1)
+    if [[ ! "$v" == "$latest" ]]
+    then
+      echo "$v -> $latest"
+      pyenv uninstall -f "$v"
+      pyenv install "$latest"
+    fi
+  done
+
   for f in `/usr/bin/ls $HOME/.pyenv/versions`
   do
     read < <( .pyenv/versions/$f/bin/pip install -qqqU pip > /dev/null & echo $! )
@@ -131,7 +143,7 @@ backup-telegraf() {
   base="/mnt/c/Users/kurah/Nextcloud/Grafana Config"
   for h in p g vpn
   do
-    scp -r $h:/etc/telegraf "$base/$h"
+    rsync -avr $h:/etc/telegraf "$base/$h"
   done
   scp -r g:/etc/influxdb "$base/g"
   scp -r g:/etc/grafana "$base/g"
@@ -172,7 +184,7 @@ backup-influxdb-grafana-mysql() {
   echo "ssh g 'sudo mysql -u root grafana > /tmp/grafana.sql && sudo mv /tmp/grafana.sql /'"
   ssh g 'sudo mysqldump -u root grafana > /tmp/grafana.sql && sudo mv /tmp/grafana.sql /'
 
-  echo "ssh g 'sudo tar cvf - /data/influxdb /var/lib/grafana /grafana.sql --sort=name' | zstd -T0 -19 --long=27 --stdout > $fpath"
+  echo "ssh g 'sudo tar cvf - /data/influxdb /etc/influxdb /var/lib/grafana /grafana.sql --sort=name' | zstd -T0 -19 --long=27 --stdout > $fpath"
   ssh g 'sudo tar cvf - /data/influxdb /var/lib/grafana /grafana.sql --sort=name' | zstd -T0 -19 --long=27 --stdout > $fpath
   # ssh g 'cd /data/influxdb && sudo find . -print0 | sort -z | sed "s|^./||" | sudo tar cvf - --no-recursion --null -T -' | zstd -T0 -19 --long=27 --stdout > $fpath
 
@@ -241,14 +253,14 @@ backup-vaultwarden() {
   echo "flyctl ssh console -a \"${vm_name}\" -C \"rm /tmp/vaultwarden.tar\""
   flyctl ssh console -a "${vm_name}" -C "rm /tmp/vaultwarden.tar"
 
-  echo "zstd -T0 -19 --long=27 \"/tmp/vaultwarden.tar\" -o \"/tmp/${fname}\""
-  zstd -T0 -19 --long=27 "/tmp/vaultwarden.tar" -o "/tmp/${fname}"
+  echo "zstd -T0 -19 --long=27 \"$PWD/vaultwarden.tar\" -o \"/tmp/${fname}\""
+  zstd -T0 -19 --long=27 "$PWD/vaultwarden.tar" -o "/tmp/${fname}"
 
   echo "mv \"/tmp/${fname}\" \"${base}\""
   mv "/tmp/${fname}" "${base}"
 
-  echo "rm /tmp/vaultwarden.tar"
-  [ ! -e "/tmp/vaultwarden.tar" ] || rm /tmp/vaultwarden.tar
+  echo "rm $PWD/vaultwarden.tar"
+  [ ! -e "$PWD/vaultwarden.tar" ] || rm $PWD/vaultwarden.tar
 
   par2 create -v -m16777216 -t16 -T16 -r34 -n5 "${base}/${fname}"
   par2 verify -v -m16777216 -t16 -T16 "${base}/${fname}"
@@ -274,14 +286,14 @@ backup-uptime-kuma() {
   echo "flyctl ssh console -a \"${vm_name}\" -C \"rm /tmp/uptime-kuma.tar\""
   flyctl ssh console -a "${vm_name}" -C "rm /tmp/uptime-kuma.tar"
 
-  echo "zstd -T0 -19 --long=27 \"/tmp/uptime-kuma.tar\" -o \"/tmp/${fname}\""
-  zstd -T0 -19 --long=27 "/tmp/uptime-kuma.tar" -o "/tmp/${fname}"
+  echo "zstd -T0 -19 --long=27 \"$PWD/uptime-kuma.tar\" -o \"/tmp/${fname}\""
+  zstd -T0 -19 --long=27 "$PWD/uptime-kuma.tar" -o "/tmp/${fname}"
 
   echo "mv \"/tmp/${fname}\" \"${base}\""
   mv "/tmp/${fname}" "${base}"
 
-  echo "rm /tmp/uptime-kuma.tar"
-  [ ! -e "/tmp/uptime-kuma.tar" ] || rm /tmp/uptime-kuma.tar
+  echo "rm $PWD/uptime-kuma.tar"
+  [ ! -e "$PWD/uptime-kuma.tar" ] || rm $PWD/uptime-kuma.tar
 
   par2 create -v -m16777216 -t16 -T16 -r34 -n5 "${base}/${fname}"
   par2 verify -v -m16777216 -t16 -T16 "${base}/${fname}"

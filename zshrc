@@ -128,4 +128,5 @@ unalias la
 # unalias diff
 source $HOME/.zsh_aliases
 eval "$(register-python-argcomplete pipx)"
+eval "$(atuin init zsh)"
 cd ~
