@@ -44,7 +44,6 @@ restore() {
   if [ "$#" -lt 3 ]
   then
     echo "Usage $0 restore <time (1D, 1M, 2023-01-01)> <destination> [<file>]"
-    unset_vars
     exit
   fi
   args=( "duplicity" "restore" "-v5" "--restore-time ${2}" )
@@ -57,16 +56,9 @@ restore() {
   eval "${args[@]}"
 }
 
-unset_vars() {
-  unset AWS_ACCESS_KEY_ID
-  unset AWS_SECRET_ACCESS_KEY
-  unset PASSPHRASE
-}
-
 if [ "$#" -lt 1 ]
 then
   echo "Usage $0 (backup|verify|restore|list|clean)"
-  unset_vars
   exit 1
 fi
 case "$1" in
@@ -89,5 +81,3 @@ case "$1" in
     echo "Usage: $0 (backup|verify|restore|list|clean)"
     ;;
 esac
-
-unset_vars
