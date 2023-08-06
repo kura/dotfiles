@@ -11,7 +11,7 @@ backup() {
   duplicity \
     --name backup \
     --allow-source-mismatch \
-    --full-if-older-than 1M \
+    --full-if-older-than 3M \
     --s3-use-ia \
     --asynchronous-upload \
     --s3-use-new-style \
