@@ -27,9 +27,6 @@ verify() {
   duplicity verify \
     --name backup \
     -v5 \
-    --exclude-if-present ".owncloudsync.log" \
-    --exclude-if-present ".sync*" \
-    --exclude-if-present "Desktop.ini" \
     "${DEST}" "${SOURCE}"
 }
 

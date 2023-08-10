@@ -28,9 +28,6 @@ verify() {
     --name backup \
     --s3-endpoint-url "${S3_ENDPOINT_URL}" \
     -v5 \
-    --exclude-if-present ".owncloudsync.log" \
-    --exclude-if-present ".sync*" \
-    --exclude-if-present "Desktop.ini" \
     "${DEST}" "${SOURCE}"
 }
 
