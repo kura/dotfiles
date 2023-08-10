@@ -3,8 +3,9 @@ set -eu
 
 _cmd=$(basename "${0}")
 export PASSPHRASE="$(head -n 1 "${HOME}/.backup_key")"
-export AWS_ACCESS_KEY_ID=$(awk -F '=' '/aws_access_key_id/ {print $2}' "${HOME}/.aws/credentials" | tr -d ' ')
-export AWS_SECRET_ACCESS_KEY=$(awk -F '=' '/aws_secret_access_key/ {print $2}' "${HOME}/.aws/credentials" | tr -d ' ')
+export AWS_ACCESS_KEY_ID=$(awk -F '=' '/KEY_ID/ {print $2}' "${HOME}/.backblaze" | tr -d ' ')
+export AWS_SECRET_ACCESS_KEY=$(awk -F '=' '/APPLICATION_KEY/ {print $2}' "${HOME}/.backblaze" | tr -d ' ')
+S3_ENDPOINT_URL="https://s3.eu-central-003.backblazeb2.com"
 SOURCE="/path/to/directory"
 DEST="boto3+s3://bucket_name"
 
@@ -13,9 +14,8 @@ backup() {
     --name backup \
     --allow-source-mismatch \
     --full-if-older-than 3M \
-    --s3-use-ia \
     --asynchronous-upload \
-    --s3-use-new-style \
+    --s3-endpoint-url "${S3_ENDPOINT_URL}" \
     -v5 \
     --exclude-if-present ".owncloudsync.log" \
     --exclude-if-present ".sync*" \
@@ -26,6 +26,7 @@ backup() {
 verify() {
   duplicity verify \
     --name backup \
+    --s3-endpoint-url "${S3_ENDPOINT_URL}" \
     -v5 \
     --exclude-if-present ".owncloudsync.log" \
     --exclude-if-present ".sync*" \
@@ -34,11 +35,11 @@ verify() {
 }
 
 list() {
-  duplicity list-current-files "${DEST}"
+  duplicity --s3-endpoint-url "${S3_ENDPOINT_URL}" list-current-files "${DEST}"
 }
 
 clean() {
-  duplicity cleanup "${DEST}"
+  duplicity --s3-endpoint-url "${S3_ENDPOINT_URL}" cleanup "${DEST}"
 }
 
 restore() {
@@ -47,7 +48,7 @@ restore() {
     echo "Usage: ${_cmd} restore <time (1D, 1M, 2023-01-01)> <destination> [<file>]"
     exit
   fi
-  args=( "duplicity" "restore" "-v5" "--restore-time ${2}" )
+  args=( "duplicity" "restore" "--s3-endpoint-url \"${S3_ENDPOINT_URL}\"" "-v5" "--restore-time ${2}" )
   if [ "$#" -ge 4 ]
   then
     args+=( "--file-to-restore \"${4}\"" )
@@ -62,7 +63,7 @@ remove_older_than() {
     echo "Usage: ${_cmd} remove_older_than <time (1D, 1M, 2023-01-01)>"
     exit
   fi
-  duplicity remove-older-than "${2}" "${DEST}"
+  duplicity remove-older-than --s3-endpoint-url "${S3_ENDPOINT_URL}" "${2}" "${DEST}"
 }
 
 if [ "$#" -lt 1 ]
