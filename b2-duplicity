@@ -6,14 +6,16 @@ export PASSPHRASE="$(head -n 1 "${HOME}/.backup_key")"
 export AWS_ACCESS_KEY_ID=$(awk -F '=' '/KEY_ID/ {print $2}' "${HOME}/.backblaze" | tr -d ' ')
 export AWS_SECRET_ACCESS_KEY=$(awk -F '=' '/APPLICATION_KEY/ {print $2}' "${HOME}/.backblaze" | tr -d ' ')
 S3_ENDPOINT_URL="https://s3.eu-central-003.backblazeb2.com"
-SOURCE="/path/to/directory"
-DEST="boto3+s3://bucket_name"
+SOURCE="</PATH/TO/DIRECTORY>"
+BUCKET="<BUCKET_NAME>"
+DEST="boto3+s3://${BUCKET}"
+FULL_IF_OLDER="1M"
 
 backup() {
   duplicity incremental \
     --name backup \
     --allow-source-mismatch \
-    --full-if-older-than 3M \
+    --full-if-older-than "${FULL_IF_OLDER}" \
     --asynchronous-upload \
     --s3-endpoint-url "${S3_ENDPOINT_URL}" \
     -v5 \

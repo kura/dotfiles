@@ -8,7 +8,7 @@ export AWS_SECRET_ACCESS_KEY=$(awk -F '=' '/aws_secret_access_key/ {print $2}' "
 SOURCE="</PATH/TO/DIRECTORY>"
 BUCKET="<BUCKET_NAME>"
 DEST="boto3+s3://${BUCKET}"
-FULL_IF_OLDER="3M"
+FULL_IF_OLDER="1M"
 
 backup() {
   duplicity incremental \
