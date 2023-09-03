@@ -8,13 +8,17 @@ export AWS_SECRET_ACCESS_KEY=$(awk -F '=' '/aws_secret_access_key/ {print $2}' "
 SOURCE="</PATH/TO/DIRECTORY>"
 BUCKET="<BUCKET_NAME>"
 DEST="boto3+s3://${BUCKET}"
+NAME="s3-backup"
 FULL_IF_OLDER="1M"
+# VOL_SIZE=204800  # 200MB (default)
+VOL_SIZE=1024000  # 1GB
 
 backup() {
   duplicity incremental \
-    --name backup \
+    --name "${NAME}" \
     --allow-source-mismatch \
     --full-if-older-than "${FULL_IF_OLDER}" \
+    --volsize "${VOL_SIZE}" \
     --s3-use-ia \
     --asynchronous-upload \
     -v5 \
