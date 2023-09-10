@@ -8,19 +8,29 @@ export AWS_SECRET_ACCESS_KEY=$(awk -F '=' '/APPLICATION_KEY/ {print $2}' "${HOME
 S3_ENDPOINT_URL="https://s3.eu-central-003.backblazeb2.com"
 SOURCE="</PATH/TO/DIRECTORY>"
 BUCKET="<BUCKET_NAME>"
-DEST="boto3+s3://${BUCKET}"
+DEST="par2+boto3+s3://${BUCKET}"
 NAME="b2-backup"
 FULL_IF_OLDER="1M"
 # VOL_SIZE=204800  # 200MB (default)
 VOL_SIZE=1024000  # 1GB
 
 backup() {
-  duplicity incremental \
+  METHOD="incremental"
+  if [ "$#" -ge 2 ]
+  then
+    if ! [[ "$2" =~ ^(full|incr|incremental)$ ]]
+    then
+      echo "Usage: ${_cmd} backup [full|incremental]"
+      exit
+    else
+      METHOD="${2}"
+    fi
+  fi
+  duplicity "${METHOD}" \
     --name "${NAME}" \
     --allow-source-mismatch \
     --full-if-older-than "${FULL_IF_OLDER}" \
     --volsize "${VOL_SIZE}" \
-    --asynchronous-upload \
     --s3-endpoint-url "${S3_ENDPOINT_URL}" \
     -v5 \
     --exclude-if-present ".owncloudsync.log" \
@@ -76,7 +86,7 @@ then
 fi
 case "$1" in
   backup)
-    backup
+    backup "$@"
     ;;
   verify)
     verify

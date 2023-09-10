@@ -7,20 +7,30 @@ export AWS_ACCESS_KEY_ID=$(awk -F '=' '/aws_access_key_id/ {print $2}' "${HOME}/
 export AWS_SECRET_ACCESS_KEY=$(awk -F '=' '/aws_secret_access_key/ {print $2}' "${HOME}/.aws/credentials" | tr -d ' ')
 SOURCE="</PATH/TO/DIRECTORY>"
 BUCKET="<BUCKET_NAME>"
-DEST="boto3+s3://${BUCKET}"
+DEST="par2+boto3+s3://${BUCKET}"
 NAME="s3-backup"
 FULL_IF_OLDER="1M"
 # VOL_SIZE=204800  # 200MB (default)
 VOL_SIZE=1024000  # 1GB
 
 backup() {
-  duplicity incremental \
+  METHOD="incremental"
+  if [ "$#" -ge 2 ]
+  then
+    if ! [[ "$2" =~ ^(full|incr|incremental)$ ]]
+    then
+      echo "Usage: ${_cmd} backup [full|incremental]"
+      exit
+    else
+      METHOD="${2}"
+    fi
+  fi
+  duplicity "${METHOD}" \
     --name "${NAME}" \
     --allow-source-mismatch \
     --full-if-older-than "${FULL_IF_OLDER}" \
     --volsize "${VOL_SIZE}" \
     --s3-use-ia \
-    --asynchronous-upload \
     -v5 \
     --exclude-if-present ".owncloudsync.log" \
     --exclude-if-present ".sync*" \
@@ -74,7 +84,7 @@ then
 fi
 case "$1" in
   backup)
-    backup
+    backup "$@"
     ;;
   verify)
     verify
