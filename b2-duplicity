@@ -41,10 +41,14 @@ backup() {
 
 verify() {
   duplicity verify \
-    --name backup \
+    --name "${NAME}" \
     --s3-endpoint-url "${S3_ENDPOINT_URL}" \
     -v5 \
     "${DEST}" "${SOURCE}"
+}
+
+status() {
+  duplicity collection-status --s3-endpoint-url "${S3_ENDPOINT_URL}" "${DEST}"
 }
 
 list() {
@@ -81,7 +85,7 @@ remove_older_than() {
 
 if [ "$#" -lt 1 ]
 then
-  echo "Usage: ${_cmd} (backup|verify|restore|list|clean|remove_older_than)"
+  echo "Usage: ${_cmd} (backup|verify|restore|status|list|clean|remove_older_than)"
   exit 1
 fi
 case "$1" in
@@ -99,6 +103,9 @@ case "$1" in
     ;;
   restore)
     restore "$@"
+    ;;
+  status)
+    status
     ;;
   remove_older_than)
     remove_older_than "$@"
